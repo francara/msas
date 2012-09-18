@@ -1,0 +1,12 @@
+v0.1:
+
+* Planejamento por DP.
+- Mapa de estados implementando um gradiente.
+- Penalidade INFINITA por falta de recurso.
+      -- Se a penalidade for infinita, o passo nunca mais entra em planos!!!
+- Branch de planejamento por profundidade (os passos mais proximos
+do objetivo são penalizados.
+
+* Coalizão
+- Jogo de votação
+    -- Implementar valor de shapley por amostragem
