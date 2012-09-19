@@ -11,6 +11,7 @@ import usp.cognitio.msas.simul.compartilhamento.SimulConfiguration
 import usp.cognitio.msas.simul.log.trace
 import usp.cognitio.msas.util.Logging
 import usp.cognitio.msas.Rc
+import usp.cognitio.msas.agent.Player
 
 /**
  * Socialization abilities of an agent.

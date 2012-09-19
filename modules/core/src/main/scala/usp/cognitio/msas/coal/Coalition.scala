@@ -1,6 +1,5 @@
 package usp.cognitio.msas.coal
 import usp.cognitio.math.Roundable
-import usp.cognitio.msas.agent.soc.Socialization.agToSocialization
 import usp.cognitio.msas.agent.Ag
 import scala.collection._
 import org.apache.log4j.Logger
@@ -9,6 +8,9 @@ import usp.cognitio.msas.util.Logging
 import usp.cognitio.msas.Rc
 import usp.cognitio.msas.Rc.{ :? => :? }
 import usp.cognitio.msas.Rc.CommaCommaQuesttoRc
+import usp.cognitio.msas.agent.Player
+import usp.cognitio.msas.agent.soc.Socialization
+import usp.cognitio.msas.agent.SocializationPlayer
 
 abstract class Coalition(protected var mbs: List[Ag]) extends Roundable with Logging {
 
@@ -86,7 +88,8 @@ abstract class Coalition(protected var mbs: List[Ag]) extends Roundable with Log
   }
 
   def alocate(): Map[Ag, Rc] = {
-    trace alocate (this)
+    // TODO trace Player
+//    trace alocate (this)
     if (mbs.size == 1) return contribution
 
     var als: Map[Ag, Rc] = Map.empty[Ag, Rc]
@@ -112,7 +115,8 @@ abstract class Coalition(protected var mbs: List[Ag]) extends Roundable with Log
     trace available (this, toBeConsumed)
     als = alocateAvailable(als, toBeConsumed, agShapleyVls)
 
-    trace alocationAndAvailable (this, als.toList)
+    // TODO trace Player
+//    trace alocationAndAvailable (this, als.toList)
     return als
   }
 
@@ -199,6 +203,9 @@ abstract class Coalition(protected var mbs: List[Ag]) extends Roundable with Log
   }
 
   override def toString = mbs.mkString("[", ",", "]")
-
+  implicit def agToPlayer(ag: Ag): Player = { 
+    if (ag.isInstanceOf[Socialization]) new SocializationPlayer(ag) else ag.asInstanceOf[Player]
+  }
+//  implicit def agToSocialization(ag: Ag) : Socialization = ag.asInstanceOf[Socialization]
 }
 

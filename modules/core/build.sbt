@@ -4,6 +4,5 @@ libraryDependencies ++= Seq(
   "junit" % "junit" % "4.8" % "test", // For JUnit 4 testing
   "commons-lang" % "commons-lang" % "2.6" ,
   "org.apache.commons" % "commons-math3" % "3.0" ,
-  "com.novocode" % "junit-interface" % "0.8" % "test"
-  
+  "com.novocode" % "junit-interface" % "0.8" % "test" 
 )

@@ -40,12 +40,12 @@ case class EgoCog(_ag:MsasAg) extends Ego(_ag) with PlanProspector with PlanMapp
     /*
      * Transforms plans into required resources.
      */
-    val rcPi = this.mapit(sense, plan)
+    val pi = this.mapit(sense, plan)
     
     /*
      * If there is a lack os resources we should try to coligate.
      */
-    if (rcPi.sum > 0) plan.addFirst(ActSoc())
+    if (pi.sum > 0)  plan.addFirst(ActSoc())
     
     return plan
   }

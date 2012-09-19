@@ -7,13 +7,16 @@ import Direction.South
 import Direction.East
 import Direction.West
 import usp.cognitio.msas.Rc
+import usp.cognitio.math.alg.Point
 
 /**
  * Represents the environment in a matrix N x N.
  */
-class GridWorld(val N : Int) {
+class GridWorld(val N : Int) extends WorldSoc with WorldPhy {
   val cells : Array[Array[GridCell]] = Array.tabulate(N,N)((x,y) => new GridCell(x,y,this))
   val where : Map[Ag,GridCell] = scala.collection.mutable.Map[Ag,GridCell]()
+  
+  def sense(ag: Ag): WorldSense = WorldSense(N, Point(0,0), this, this)
   
   def apply(x:Int, y:Int) : GridCell = cells(x)(y)
   

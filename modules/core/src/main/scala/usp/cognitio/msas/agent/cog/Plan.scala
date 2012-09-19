@@ -1,21 +1,38 @@
 package usp.cognitio.msas.agent.cog
 import usp.cognitio.msas.agent.Act
 import usp.cognitio.msas.agent.ActPhy
+import usp.cognitio.msas.agent.ActSoc
 
-class Plan(var acts: List[Act]) {
+case class Plan(var acts: List[Act]) {
   /** Current action. */
   var index: Int = 0
   
   def add(act:Act) = acts = acts ::: act :: Nil
   def addFirst(act:Act) = acts = act :: acts
   
-  def next : Act = acts(index)
-  
+  def next : Boolean = doNext
+  protected def doNext : Boolean = {
+    if (index < acts.size) {
+      index += 1; 
+      true
+    } else false
+  }
+  def action : Act = acts(index)
+  def isNull = false
 }
 
-object Plan {
-  def apply(acts:List[Act]) = new Plan(acts)
-  
+case class NullPlan extends Plan(Nil) {
+  override def isNull = true
+}
+
+case class SingletonPlan(val socialAct : ActSoc, val plan: Plan) extends Plan(plan.acts) {
+  override def next : Boolean = {
+    doNext
+    super.next
+  }
+}
+
+object Plan {  
   implicit def actsToPlan(acts: List[Act]) : Plan = new Plan(acts)
   implicit def xysToAct(xys: List[(Int,Int)]) : Plan = new Plan(xys)
   implicit def XYToAct(xy: (Int,Int)) : ActPhy = ActPhy(xy)
