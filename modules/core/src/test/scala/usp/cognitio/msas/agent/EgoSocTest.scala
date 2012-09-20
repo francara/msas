@@ -35,6 +35,6 @@ class EgoSocTest extends Logging {
     ag1.act(world.sense(ag1))
     assertEquals(Rc(0, 1, 0), ag1.rc)
     assertEquals(Rc(1, 0, 0), ag2.rc)
-    
+    ag2.act(world.sense(ag2))
   }
 }

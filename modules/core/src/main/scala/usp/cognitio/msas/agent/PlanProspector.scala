@@ -31,7 +31,7 @@ trait PlanProspector {
     val consume = Rc(rc.resources)
     val path = AStarPlanner((p1, p2) => {
       1.00 + space.cost(p2.x)(p2.y) + penalty(sense, consume, p2)
-    }, (0,0), target).* 
+    }, sense.position, target).* 
     
     // Transforms each point into a movement action.
     val acts = path.points.map(ActPhy(_))

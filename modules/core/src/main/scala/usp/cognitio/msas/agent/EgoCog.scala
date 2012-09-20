@@ -42,7 +42,7 @@ case class EgoCog(_ag:MsasAg) extends Ego(_ag) with PlanProspector with PlanMapp
     /*
      * If there is a lack os resources we should try to coligate.
      */
-    if (pi.sum > 0)  plan.addFirst(ActSoc())
+    if ((rc ^- pi).sum > 0)  plan.addFirst(ActSoc())
     
     return SingletonPlan(plan)
   }

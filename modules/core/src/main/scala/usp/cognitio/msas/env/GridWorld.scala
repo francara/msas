@@ -21,22 +21,32 @@ class GridWorld(val N : Int) extends WorldSoc with WorldPhy {
   val where : Map[Ag,GridCell] = scala.collection.mutable.Map[Ag,GridCell]()
   
   def ags = _ags.toArray
-  def sense(ag: MsasAg): WorldSense = WorldSense(N, ag, Point(0,0), this, this)
+  def sense(ag: MsasAg): WorldSense = WorldSense(N, ag, where(ag).point, this, this)
   
   def apply(x:Int, y:Int) : GridCell = cells(x)(y)
   
   def enter(ag : MsasAg, x:Int, y:Int) : GridWorld = {
     _ags += ag
     where(ag) = cells(x)(y).in(ag)
-    this.coals += (ag -> createCoalition(ag))
+    this.coals += (ag -> ag.coalition)
     return this
   }
   
+  def position(ag: Ag) = where(ag).point
   def whereIs(ag : Ag) : GridCell = where(ag)
   def moveTo(ag : Ag, d : Direction.Value) : GridCell = {
     val cell = where(ag).out(ag).next(d).in(ag)
     where(ag) = cell
     return cell
+  }
+  def move(ag:Ag, pos: Point) : Boolean = {
+    val curcell = where(ag)
+    val ncell = moveToNeigh(ag, pos)
+    if (curcell != ncell) true else false
+  }  
+  def moveToNeigh(ag: Ag, p: Point) : GridCell = {
+    if (where(ag).neigh(p) == where(ag)) where(ag)
+    where(ag).out(ag).neigh(p).in(ag)
   }
   
   def next(x : Int, y : Int, d : Direction.Value) : GridCell = {

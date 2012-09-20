@@ -5,6 +5,7 @@ import usp.cognitio.msas.env.Direction
 import scala.util.Random
 import org.apache.commons.lang.builder.HashCodeBuilder
 import usp.cognitio.msas.Rc
+import usp.cognitio.math.alg.Point
 
 class GridCell(val x : Int, val y : Int, grid : GridWorld) {
   /**
@@ -26,6 +27,11 @@ class GridCell(val x : Int, val y : Int, grid : GridWorld) {
   def who : List[Ag] = ags
   def contains(ag : Ag) : Boolean = ags.exists(_ == ag)
   def next(d : Direction.Value) : GridCell = grid.next(x,y,d)
+  def neigh(p: Point) : GridCell = 
+    if (Point(x,y).neighs.contains(p)) grid.cells(p.x)(p.y)
+    else this
+  
+  def point = Point(x,y)
   
   def clone(rcClone : Rc) : GridCell = {
     val other = new GridCell(x,y,grid) {
