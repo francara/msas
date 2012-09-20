@@ -22,7 +22,7 @@ case class EgoSoc(_ag: MsasAg) extends Ego(_ag) with Roundable {
 
   def act(sense: WorldSense, plan: Plan): Plan = {
     val action = plan.action
-    if (action.isInstanceOf[ActPhy]) return plan
+    if (action.isPhy) return plan
 
     var candidates: List[Candidate] = Nil
     /*
@@ -50,6 +50,7 @@ case class EgoSoc(_ag: MsasAg) extends Ego(_ag) with Roundable {
     if (candidate.session.coligate()) {
       this.coalition.remove(ag)
       this.coalition = candidate.session.coalition
+      plan.next
     }
 
     return plan

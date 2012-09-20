@@ -19,18 +19,18 @@ case class Plan(var acts: List[Act]) {
   }
   def action : Act = acts(index)
   def isNull = false
+  
+  def path : Path = {
+    Path(acts.filter(_.isInstanceOf[ActPhy]).map(_.asInstanceOf[ActPhy].target))
+  }
+  
 }
 
 case class NullPlan extends Plan(Nil) {
   override def isNull = true
 }
 
-case class SingletonPlan(val socialAct : ActSoc, val plan: Plan) extends Plan(plan.acts) {
-  override def next : Boolean = {
-    doNext
-    super.next
-  }
-}
+case class SingletonPlan(val plan: Plan) extends Plan(plan.acts)
 
 object Plan {  
   implicit def actsToPlan(acts: List[Act]) : Plan = new Plan(acts)

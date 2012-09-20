@@ -33,20 +33,25 @@ class MsasAg(_id: Long, _rc: Rc) extends Ag(_id, _rc) with Player {
      * only if needed.
      */
     plan match {
-      case NullPlan() => plan = ecog.act(sense)
-      case p : SingletonPlan => p.next 
+      case NullPlan() => plan = ecog.think(sense)
+      case p : SingletonPlan => true 
       case _ =>
-        val nplan = ecog.act(sense)
+        val nplan = ecog.think(sense)
         merge(nplan, plan)
     }
 
+    if (plan.action.isPhy) { 
+      body.act(plan.action.asInstanceOf[ActPhy])
+      plan.next
+    }
+    
     /*
      * The environment may have changed.
      */
     val nrcPi = ecog.mapit(sense, plan)
     if (nrcPi != rcPi) {
       rcPi = nrcPi
-      esoc.act(sense, plan)
+      if (plan.action.isSoc) esoc.act(sense, plan)
     }
 
     /*

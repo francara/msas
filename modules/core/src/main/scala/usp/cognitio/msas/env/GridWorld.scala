@@ -8,20 +8,27 @@ import Direction.East
 import Direction.West
 import usp.cognitio.msas.Rc
 import usp.cognitio.math.alg.Point
+import usp.cognitio.msas.agent.MsasAg
+import scala.collection.mutable.ArrayBuffer
 
 /**
  * Represents the environment in a matrix N x N.
  */
 class GridWorld(val N : Int) extends WorldSoc with WorldPhy {
+  Point.MAX = N
   val cells : Array[Array[GridCell]] = Array.tabulate(N,N)((x,y) => new GridCell(x,y,this))
+  private var _ags : ArrayBuffer[MsasAg] = new ArrayBuffer[MsasAg]()
   val where : Map[Ag,GridCell] = scala.collection.mutable.Map[Ag,GridCell]()
   
-  def sense(ag: Ag): WorldSense = WorldSense(N, Point(0,0), this, this)
+  def ags = _ags.toArray
+  def sense(ag: MsasAg): WorldSense = WorldSense(N, ag, Point(0,0), this, this)
   
   def apply(x:Int, y:Int) : GridCell = cells(x)(y)
   
-  def enter(ag : Ag, x:Int, y:Int) : GridWorld = {
+  def enter(ag : MsasAg, x:Int, y:Int) : GridWorld = {
+    _ags += ag
     where(ag) = cells(x)(y).in(ag)
+    this.coals += (ag -> createCoalition(ag))
     return this
   }
   

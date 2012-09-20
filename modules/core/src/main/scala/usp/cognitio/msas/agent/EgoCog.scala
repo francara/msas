@@ -8,20 +8,17 @@ import usp.cognitio.msas.Rc
 import usp.cognitio.msas.agent.cog.Plan
 import usp.cognitio.msas.env.WorldSoc
 import usp.cognitio.msas.env.WorldPhy
+import usp.cognitio.msas.agent.cog.SingletonPlan
 
-case class EgoCog(_ag:MsasAg) extends Ego(_ag) with PlanProspector with PlanMapper {
-  Point.MAX = 10
-  val space = Space()
-
+case class EgoCog(_ag:MsasAg) extends Ego(_ag) with PlanProspector with PlanMapper {  
+  val _space = Space()
+  
+  def space = _space
   def rc = ag.rc
   def rcPi = ag.rcPi
   def target : Point = (2,2)
   
-  def init(wphy: WorldPhy, wsoc: WorldSoc) {
-    
-  }
-  
-  def act(sense:WorldSense) : Plan = {
+  def think(sense:WorldSense) : Plan = {
     /*
      * Build plans according the state space.
      * 
@@ -47,7 +44,7 @@ case class EgoCog(_ag:MsasAg) extends Ego(_ag) with PlanProspector with PlanMapp
      */
     if (pi.sum > 0)  plan.addFirst(ActSoc())
     
-    return plan
+    return SingletonPlan(plan)
   }
     
 }

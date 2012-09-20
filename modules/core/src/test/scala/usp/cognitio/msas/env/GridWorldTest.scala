@@ -8,6 +8,7 @@ import usp.cognitio.msas.env.Direction.West
 import usp.cognitio.msas.env.Direction.North
 import usp.cognitio.msas.env.Direction.South
 import usp.cognitio.msas.Rc
+import usp.cognitio.msas.agent.MsasAg
 
 class GridWorldTest extends Logging {
   @Test
@@ -25,13 +26,13 @@ class GridWorldTest extends Logging {
     /*
      * Insert agent into world.
      */
-    val ag1: Ag = new Ag(1, Rc.nil)
+    val ag1: MsasAg = new MsasAg(1, Rc.nil)
     world.enter(ag1, 1, 1)
 
     debug("Cell 1,1: Entered agent 1: " + world(1, 1))
     assertEquals(world(1, 1).ags, List(ag1))
 
-    val ag2: Ag = new Ag(2, Rc.nil)
+    val ag2: MsasAg = new MsasAg(2, Rc.nil)
     world.enter(ag2, 1, 1)
 
     debug("Cell 1,1: Entered agent 2: " + world(1, 1))
@@ -47,7 +48,7 @@ class GridWorldTest extends Logging {
      */
     world.putRc(1, 1, new Rc(3 :: 0 :: 0 :: Nil))
     world.putRc(2, 1, new Rc(0 :: 1 :: 0 :: Nil))
-    val (ag1, ag2) = (new Ag(1, Rc.nil), new Ag(2, Rc.nil))
+    val (ag1, ag2) = (new MsasAg(1, Rc.nil), new MsasAg(2, Rc.nil))
     world.enter(ag1, 1, 1).enter(ag2, 1, 1)
 
     assertTrue(world(1, 1).contains(ag1))
@@ -76,7 +77,7 @@ class GridWorldTest extends Logging {
   def testMove {
     debug("*********   Test MOVE   *********")
     val world = new GridWorld(4)
-    val ag = new Ag(1, Rc.nil)
+    val ag = new MsasAg(1, Rc.nil)
     world.enter(ag, 0, 0)
 
     assertIn(world, ag, (0, 0))
