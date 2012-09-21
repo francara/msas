@@ -15,4 +15,6 @@ case class WorldSense (
   val neighs : Array[MsasAg] = wphy.ags.filter( _ != ag)
   def coals : Map[MsasAg,Coalition] = wsoc.coals
 
+  def refresh: WorldSense = wphy.sense(this.ag)
+  
 }

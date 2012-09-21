@@ -20,6 +20,8 @@ case class Plan(var acts: List[Act]) {
   def action : Act = acts(index)
   def isNull = false
   
+  def finished : Boolean = index >= acts.size
+  
   def path : Path = {
     Path(acts.filter(_.isInstanceOf[ActPhy]).map(_.asInstanceOf[ActPhy].target))
   }

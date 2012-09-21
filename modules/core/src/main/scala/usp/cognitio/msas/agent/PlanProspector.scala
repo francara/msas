@@ -8,6 +8,7 @@ import usp.cognitio.msas.agent.cog.plan.AStarPlanner
 import usp.cognitio.math.alg.Point
 import usp.cognitio.msas.agent.cog.plan.Space
 import usp.cognitio.msas.Rc
+import usp.cognitio.msas.agent.cog.NullPlan
 
 trait PlanProspector {
   def space : Space
@@ -32,9 +33,13 @@ trait PlanProspector {
     val path = AStarPlanner((p1, p2) => {
       1.00 + space.cost(p2.x)(p2.y) + penalty(sense, consume, p2)
     }, sense.position, target).* 
+
     
     // Transforms each point into a movement action.
-    val acts = path.points.map(ActPhy(_))
+    // Remove the first action that represents the current position.
+    val acts = path.points.map(ActPhy(_)).tail
+    if (acts.isEmpty) return List(NullPlan())
+    
     return List(Plan(acts))
   }
   

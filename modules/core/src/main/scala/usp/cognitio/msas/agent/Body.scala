@@ -8,10 +8,7 @@ case class Body (
   val soc : WorldSoc) {
   
   def act(action: ActPhy):Boolean = {
-    true
+    phy.move(ag, action.target)
   }
-  
-  def act(action: ActSoc):Boolean = {
-    true
-  }
+
 }

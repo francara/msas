@@ -27,12 +27,14 @@ class GridWorldTest extends Logging {
      * Insert agent into world.
      */
     val ag1: MsasAg = new MsasAg(1, Rc.nil)
+    ag1.init(world,world)
     world.enter(ag1, 1, 1)
 
     debug("Cell 1,1: Entered agent 1: " + world(1, 1))
     assertEquals(world(1, 1).ags, List(ag1))
 
     val ag2: MsasAg = new MsasAg(2, Rc.nil)
+    ag2.init(world,world)
     world.enter(ag2, 1, 1)
 
     debug("Cell 1,1: Entered agent 2: " + world(1, 1))
@@ -49,6 +51,8 @@ class GridWorldTest extends Logging {
     world.putRc(1, 1, new Rc(3 :: 0 :: 0 :: Nil))
     world.putRc(2, 1, new Rc(0 :: 1 :: 0 :: Nil))
     val (ag1, ag2) = (new MsasAg(1, Rc.nil), new MsasAg(2, Rc.nil))
+    ag1.init(world,world)
+    ag2.init(world,world)
     world.enter(ag1, 1, 1).enter(ag2, 1, 1)
 
     assertTrue(world(1, 1).contains(ag1))
@@ -78,6 +82,7 @@ class GridWorldTest extends Logging {
     debug("*********   Test MOVE   *********")
     val world = new GridWorld(4)
     val ag = new MsasAg(1, Rc.nil)
+    ag.init(world, world)
     world.enter(ag, 0, 0)
 
     assertIn(world, ag, (0, 0))
@@ -110,8 +115,8 @@ class GridWorldTest extends Logging {
   private def assertIn(world: GridWorld, ag: Ag, cell: (Int, Int)): Unit = assertIn(world, List(ag), cell)
   private def assertIn(world: GridWorld, ags: List[Ag], cell: (Int, Int)): Unit = {
     ags.foreach(ag => {
-      for (i <- 0 to world.N - 1)
-        for (j <- 0 to world.N - 1)
+      for (i <- 0 to world.R - 1)
+        for (j <- 0 to world.R - 1)
           if ((i, j) == cell) assertTrue(world(i, j).contains(ag))
           else assertFalse(world(i, j).contains(ag))
     })

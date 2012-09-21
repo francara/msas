@@ -14,7 +14,9 @@ import org.junit.runners.Suite.SuiteClasses;
   usp.cognitio.msas.agent.soc.cen.CoalK2Test.class,
   usp.cognitio.msas.env.GridWorldTest.class,  
   usp.cognitio.msas.agent.cog.plan.DPSpaceTest.class,  
-  usp.cognitio.msas.agent.cog.AStarTest.class 
+  usp.cognitio.msas.agent.cog.AStarTest.class, 
+  usp.cognitio.msas.agent.EgoSocTest.class,
+  usp.cognitio.msas.agent.EgoCogTest.class
 })
 public class AllMsasTests {
 

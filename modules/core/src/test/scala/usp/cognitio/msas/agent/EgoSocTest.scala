@@ -12,10 +12,11 @@ class EgoSocTest extends Logging {
 
   @Test
   def teste() {
+    Rc.DIM=3
     val world = new GridWorld(4)
 
     val ag1: MsasAg = new MsasAg(1, Rc(1, 0, 0)) {
-      rcPi = Rc()
+      rcPi = Rc(0,0,0)
     }
     val ag2: MsasAg = new MsasAg(2, Rc(0, 1, 0)) {
       rcPi = Rc(1, 0, 0)
@@ -28,7 +29,7 @@ class EgoSocTest extends Logging {
     ag2.init(world, world)
     agDummy.init(world, world)
     
-    for (i <- 0 to world.N-1) world.rcs(1)(i) = Rc(0,1,0)
+    for (i <- 0 to world.R-1) world.rcs(1)(i) = Rc(0,1,0)
     world.enter(ag1, 0, 0)
     world.enter(ag2, 3, 3)
     

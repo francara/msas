@@ -7,7 +7,7 @@ import usp.cognitio.msas.env.WorldSense
 import usp.cognitio.msas.coal.KLinearSampleCoalitionGame
 
 trait WorldSoc {
-  val N: Int
+  val R: Int
   var coals: Map[MsasAg, Coalition] = Map.empty[MsasAg, Coalition]
 
   def createCoalition(ag: Ag) : Coalition = new KLinearSampleCoalitionGame(List(ag))

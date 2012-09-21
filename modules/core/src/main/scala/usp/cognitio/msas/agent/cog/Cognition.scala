@@ -11,7 +11,7 @@ trait Cognition extends Ag {
   val world: GridWorld
   var rcPi: Rc = Rc.nil
 
-  lazy val space: Space = new Space(world.N)
+  lazy val space: Space = new Space(world.R)
   lazy val planner: DPPlanner = new DPPlanner(space)
 
   var path: List[(Int, Int)] = List()

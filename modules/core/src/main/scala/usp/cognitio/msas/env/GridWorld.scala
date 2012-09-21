@@ -14,15 +14,37 @@ import scala.collection.mutable.ArrayBuffer
 /**
  * Represents the environment in a matrix N x N.
  */
-class GridWorld(val N : Int) extends WorldSoc with WorldPhy {
-  Point.MAX = N
-  val cells : Array[Array[GridCell]] = Array.tabulate(N,N)((x,y) => new GridCell(x,y,this))
+class GridWorld(val R : Int) extends WorldSoc with WorldPhy {
+  Point.MAX = R
+  val cells : Array[Array[GridCell]] = Array.tabulate(R,R)((x,y) => new GridCell(x,y,this))
   private var _ags : ArrayBuffer[MsasAg] = new ArrayBuffer[MsasAg]()
   val where : Map[Ag,GridCell] = scala.collection.mutable.Map[Ag,GridCell]()
   
   def ags = _ags.toArray
-  def sense(ag: MsasAg): WorldSense = WorldSense(N, ag, where(ag).point, this, this)
+  def sense(ag: MsasAg): WorldSense = WorldSense(R, ag, where(ag).point, this, this)
   
+  /**
+   * Randomize cell resources.
+   * Define the resource needed for cell occupation.
+   */
+  def randRcCell(x: Int, y: Int) : Rc = {
+	  Rc.nil
+  }
+  
+  /**
+   * Define agent self resources.
+   */
+  def randRcAg(ag: Ag) : Rc = {
+    Rc.nil
+  }
+  
+  /**
+   * Define agent initial position and agent target.
+   */
+  def randPosition(ag: MsasAg) : (Point, Point) = {
+    (Point(0,0), Point(R/2, R/2))
+  }
+
   def apply(x:Int, y:Int) : GridCell = cells(x)(y)
   
   def enter(ag : MsasAg, x:Int, y:Int) : GridWorld = {
@@ -46,7 +68,9 @@ class GridWorld(val N : Int) extends WorldSoc with WorldPhy {
   }  
   def moveToNeigh(ag: Ag, p: Point) : GridCell = {
     if (where(ag).neigh(p) == where(ag)) where(ag)
-    where(ag).out(ag).neigh(p).in(ag)
+    val cell = where(ag).out(ag).neigh(p).in(ag)
+    where(ag) = cell
+    return cell
   }
   
   def next(x : Int, y : Int, d : Direction.Value) : GridCell = {
@@ -56,7 +80,7 @@ class GridWorld(val N : Int) extends WorldSoc with WorldPhy {
     val nx = x + deltaX
     val ny = y + deltaY
     
-    if (nx >= 0 && nx < N && ny >= 0 && ny < N) return cells(nx)(ny)
+    if (nx >= 0 && nx < R && ny >= 0 && ny < R) return cells(nx)(ny)
     else return cells(x)(y)
   }
   

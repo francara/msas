@@ -28,6 +28,7 @@ class MsasAg(_id: Long, _rc: Rc) extends Ag(_id, _rc) with Player {
   }
 
   def act(sense: WorldSense) {
+    if (plan.finished) plan = NullPlan()
     /*
      * An agent should generate a new plan
      * only if needed.
@@ -40,7 +41,13 @@ class MsasAg(_id: Long, _rc: Rc) extends Ag(_id, _rc) with Player {
         merge(nplan, plan)
     }
 
-    if (plan.action.isPhy) { 
+    /* 
+     * The think process can generate a NullPlan
+     * if the target has already been reached.
+     */
+    if (plan.isNull) return
+    
+    if (plan.action.isPhy) {
       body.act(plan.action.asInstanceOf[ActPhy])
       plan.next
     }

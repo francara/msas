@@ -16,7 +16,7 @@ case class EgoCog(_ag:MsasAg) extends Ego(_ag) with PlanProspector with PlanMapp
   def space = _space
   def rc = ag.rc
   def rcPi = ag.rcPi
-  def target : Point = (2,2)
+  def target : Point = Point(ag.body.phy.R/2, ag.body.phy.R/2)
   
   def think(sense:WorldSense) : Plan = {
     /*
@@ -33,6 +33,9 @@ case class EgoCog(_ag:MsasAg) extends Ego(_ag) with PlanProspector with PlanMapp
      */
     val plans = this.build(sense)
     val plan = plans(0)
+    if (plan.isNull) return plan
+    /* Step out the current position. */
+    plan.next
 
     /*
      * Transforms plans into required resources.
