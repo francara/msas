@@ -50,7 +50,6 @@ case class EgoSoc(_ag: MsasAg) extends Ego(_ag) with Roundable {
     if (candidate.session.coligate()) {
       this.coalition.remove(ag)
       this.coalition = candidate.session.coalition
-      plan.next
     }
 
     return plan

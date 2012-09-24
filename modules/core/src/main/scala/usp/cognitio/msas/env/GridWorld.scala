@@ -20,6 +20,11 @@ class GridWorld(val R : Int) extends WorldSoc with WorldPhy {
   private var _ags : ArrayBuffer[MsasAg] = new ArrayBuffer[MsasAg]()
   val where : Map[Ag,GridCell] = scala.collection.mutable.Map[Ag,GridCell]()
   
+  /*
+   * Initialize cell resources.
+   */
+  for (x <- 0 to R) for (y <- 0 to R) randRcCell(x, y)
+  
   def ags = _ags.toArray
   def sense(ag: MsasAg): WorldSense = WorldSense(R, ag, where(ag).point, this, this)
   
@@ -35,7 +40,7 @@ class GridWorld(val R : Int) extends WorldSoc with WorldPhy {
    * Define agent self resources.
    */
   def randRcAg(ag: Ag) : Rc = {
-    Rc.nil
+    ag.rc
   }
   
   /**
@@ -47,6 +52,7 @@ class GridWorld(val R : Int) extends WorldSoc with WorldPhy {
 
   def apply(x:Int, y:Int) : GridCell = cells(x)(y)
   
+
   def enter(ag : MsasAg, x:Int, y:Int) : GridWorld = {
     _ags += ag
     where(ag) = cells(x)(y).in(ag)

@@ -16,7 +16,7 @@ case class EgoCog(_ag:MsasAg) extends Ego(_ag) with PlanProspector with PlanMapp
   def space = _space
   def rc = ag.rc
   def rcPi = ag.rcPi
-  def target : Point = Point(ag.body.phy.R/2, ag.body.phy.R/2)
+  def target : Point = ag.target
   
   def think(sense:WorldSense) : Plan = {
     /*

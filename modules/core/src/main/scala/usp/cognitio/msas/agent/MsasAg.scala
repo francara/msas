@@ -8,6 +8,7 @@ import usp.cognitio.msas.agent.cog.Plan
 import usp.cognitio.msas.agent.cog.NullPlan
 import usp.cognitio.msas.agent.cog.SingletonPlan
 import usp.cognitio.msas.coal.Coalition
+import usp.cognitio.math.alg.Point
 
 class MsasAg(_id: Long, _rc: Rc) extends Ag(_id, _rc) with Player {
   var ecog: EgoCog = null
@@ -18,6 +19,8 @@ class MsasAg(_id: Long, _rc: Rc) extends Ag(_id, _rc) with Player {
 
   var rcPi: Rc = Rc()
   
+  var target: Point = null
+  
   def u : Double = esoc.u
   def u(al: Rc): Double = esoc.u(al)
 
@@ -25,6 +28,8 @@ class MsasAg(_id: Long, _rc: Rc) extends Ag(_id, _rc) with Player {
     body = Body(this, wphy, wsoc)
     ecog = EgoCog(this)
     esoc = EgoSoc(this)
+    
+    target = Point(body.phy.R/2, body.phy.R/2)
   }
 
   def act(sense: WorldSense) {
@@ -50,6 +55,7 @@ class MsasAg(_id: Long, _rc: Rc) extends Ag(_id, _rc) with Player {
     if (plan.action.isPhy) {
       body.act(plan.action.asInstanceOf[ActPhy])
       plan.next
+      return
     }
     
     /*
@@ -59,6 +65,7 @@ class MsasAg(_id: Long, _rc: Rc) extends Ag(_id, _rc) with Player {
     if (nrcPi != rcPi) {
       rcPi = nrcPi
       if (plan.action.isSoc) esoc.act(sense, plan)
+      plan.next      
     }
 
     /*
@@ -67,6 +74,10 @@ class MsasAg(_id: Long, _rc: Rc) extends Ag(_id, _rc) with Player {
      */
   }
 
+  def satisfied : Boolean = {
+    return body.phy.position(this) == target
+  }
+  
   def merge(plan1: Plan, plan2: Plan): Plan = {
     return plan1
   }

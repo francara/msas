@@ -15,9 +15,9 @@ case class SessionSoc(val who: MsasAg, val neigh: MsasAg, val coalition: Coaliti
   var beforeWellfare = 0.00
   /** Wellfare aftger the agent joins neigh. */
   var afterWellfare = 0.00
-  /** Agent´s utility before joins neigh. */
+  /** Agents utility before joins neigh. */
   var beforeU = 0.00
-  /** Agent´s utility after joins neigh. */
+  /** Agents utility after joins neigh. */
   var afterU = 0.00
   
   def allocate(): Rc = {
