@@ -9,8 +9,10 @@ import usp.cognitio.msas.agent.cog.NullPlan
 import usp.cognitio.msas.agent.cog.SingletonPlan
 import usp.cognitio.msas.coal.Coalition
 import usp.cognitio.math.alg.Point
+import usp.cognitio.msas.env.specific.PlanBehaviour
 
-class MsasAg(_id: Long, _rc: Rc) extends Ag(_id, _rc) with Player {
+class MsasAg(_id: Long, _rc: Rc) extends Ag(_id, _rc) 
+	with Player with PlanBehaviour {
   var ecog: EgoCog = null
   var esoc: EgoSoc = null
   var body: Body = null
@@ -32,54 +34,8 @@ class MsasAg(_id: Long, _rc: Rc) extends Ag(_id, _rc) with Player {
     target = Point(body.phy.R/2, body.phy.R/2)
   }
 
-  def act(sense: WorldSense) {
-    if (plan.finished) plan = NullPlan()
-    /*
-     * An agent should generate a new plan
-     * only if needed.
-     */
-    plan match {
-      case NullPlan() => plan = ecog.think(sense)
-      case p : SingletonPlan => true 
-      case _ =>
-        val nplan = ecog.think(sense)
-        merge(nplan, plan)
-    }
-
-    /* 
-     * The think process can generate a NullPlan
-     * if the target has already been reached.
-     */
-    if (plan.isNull) return
-    
-    if (plan.action.isPhy) {
-      body.act(plan.action.asInstanceOf[ActPhy])
-      plan.next
-      return
-    }
-    
-    /*
-     * The environment may have changed.
-     */
-    val nrcPi = ecog.mapit(sense, plan)
-    if (nrcPi != rcPi) {
-      rcPi = nrcPi
-      if (plan.action.isSoc) esoc.act(sense, plan)
-      plan.next      
-    }
-
-    /*
-     * Decide the physical action based
-     * on the executed social action.
-     */
-  }
-
   def satisfied : Boolean = {
     return body.phy.position(this) == target
-  }
-  
-  def merge(plan1: Plan, plan2: Plan): Plan = {
-    return plan1
   }
 
   def coalition: Coalition = esoc.coalition

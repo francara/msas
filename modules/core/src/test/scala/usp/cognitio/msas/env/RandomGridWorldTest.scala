@@ -6,6 +6,7 @@ import usp.cognitio.msas.agent.Ag
 import usp.cognitio.math.alg.Point
 import org.junit.Test
 import org.junit.Assert._
+import usp.cognitio.msas.env.specific.PlanOnceActAllBehaviour
 
 class RandomGridWorldTest extends Logging {
 
@@ -44,10 +45,10 @@ class RandomGridWorldTest extends Logging {
       }
     }
 
-    val ag1: MsasAg = new MsasAg(1, Rc(1, 0, 0)) {
+    val ag1: MsasAg = new MsasAg(1, Rc(1, 0, 0)) with PlanOnceActAllBehaviour {
       rcPi = Rc(0, 0, 0)
     }
-    val ag2: MsasAg = new MsasAg(2, Rc(0, 1, 0)) {
+    val ag2: MsasAg = new MsasAg(2, Rc(0, 1, 0)) with PlanOnceActAllBehaviour {
       rcPi = Rc(1, 0, 0)
     }
 
@@ -72,12 +73,18 @@ class RandomGridWorldTest extends Logging {
     world.act()
     assertEquals(Point(2,1), world.position(ag1))
     assertEquals(Point(3,2), world.position(ag2))
+    assertFalse(ag1.satisfied)
+    assertFalse(ag2.satisfied)
     world.act()
     assertEquals(Point(2,2), world.position(ag1))
     assertEquals(Point(3,1), world.position(ag2))
+    assertTrue(ag1.satisfied)
+    assertFalse(ag2.satisfied)
     world.act()
     assertEquals(Point(2,2), world.position(ag1))
     assertEquals(Point(2,1), world.position(ag2))
+    assertTrue(ag1.satisfied)
+    assertTrue(ag2.satisfied)
     world.act()
     assertEquals(Point(2,2), world.position(ag1))
     assertEquals(Point(2,1), world.position(ag2))

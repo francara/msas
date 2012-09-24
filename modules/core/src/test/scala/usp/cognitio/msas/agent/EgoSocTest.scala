@@ -4,9 +4,9 @@ import usp.cognitio.msas.env.GridWorld
 import usp.cognitio.msas.env.SessionSoc
 import usp.cognitio.msas.Rc
 import usp.cognitio.msas.coal.VoteCoalition
-
 import org.junit.Test
 import org.junit.Assert._
+import usp.cognitio.msas.env.specific.PlanOnceActAllBehaviour
 
 class EgoSocTest extends Logging {
 
@@ -15,13 +15,13 @@ class EgoSocTest extends Logging {
     Rc.DIM=3
     val world = new GridWorld(4)
 
-    val ag1: MsasAg = new MsasAg(1, Rc(1, 0, 0)) {
+    val ag1: MsasAg = new MsasAg(1, Rc(1, 0, 0)) with PlanOnceActAllBehaviour {
       rcPi = Rc(0,0,0)
     }
-    val ag2: MsasAg = new MsasAg(2, Rc(0, 1, 0)) {
+    val ag2: MsasAg = new MsasAg(2, Rc(0, 1, 0)) with PlanOnceActAllBehaviour {
       rcPi = Rc(1, 0, 0)
     }
-    val agDummy: MsasAg = new MsasAg(99, Rc.nil) {
+    val agDummy: MsasAg = new MsasAg(99, Rc.nil) with PlanOnceActAllBehaviour {
       rcPi = Rc.nil
     }
 
