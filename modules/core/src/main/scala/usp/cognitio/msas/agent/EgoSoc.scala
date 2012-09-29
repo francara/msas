@@ -48,7 +48,7 @@ case class EgoSoc(_ag: MsasAg) extends Ego(_ag) with Roundable {
      */
     val candidate = candidates.sort(_.u > _.u).head
     if (candidate.session.coligate()) {
-      this.coalition.remove(ag)
+//      this.coalition.remove(ag)
       this.coalition = candidate.session.coalition
     }
 

@@ -13,7 +13,24 @@ trait WorldSoc {
   def createCoalition(ag: Ag) : Coalition = new KLinearSampleCoalitionGame(List(ag))
   def createCoalition(ags: List[Ag]) : Coalition = new KLinearSampleCoalitionGame(ags)
   
-  def communicate(who: MsasAg, neigh: MsasAg): SessionSoc = SessionSoc(who, neigh, coals(neigh))
+  def communicate(who: MsasAg, neigh: MsasAg): SessionSoc = SessionSoc(this, who, neigh, coals(neigh))
+  
+  /**
+   * Coligates 'who' with 'neigh'.
+   */
+  def coligate(session: SessionSoc) : Boolean = {
+    val ncoal = coals(session.neigh)
+    if (ncoal.members.contains(session.who)) return false
+
+    ncoal.add(session.who)
+    ncoal.distribute()
+    
+    val wcoal = coals(session.who)
+    wcoal.remove(session.who)
+    
+    coals += (session.who -> ncoal)
+    return true
+  }
   
   def sense(ag: MsasAg): WorldSense
 }

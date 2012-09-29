@@ -20,6 +20,8 @@ class GridWorld(val R : Int) extends WorldSoc with WorldPhy {
   private var _ags : ArrayBuffer[MsasAg] = new ArrayBuffer[MsasAg]()
   val where : Map[Ag,GridCell] = scala.collection.mutable.Map[Ag,GridCell]()
   
+  val rcs: Array[Array[Rc]] = Array.tabulate(R,R)((x, y) => randRcCell(x,y))
+  
   def ag(i: Int) = ags.find(_.id == i).head
   def ags = _ags.toArray
   def sense(ag: MsasAg): WorldSense = WorldSense(R, ag, where(ag).point, this, this)

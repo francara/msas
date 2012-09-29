@@ -2,6 +2,7 @@ package usp.cognitio.math.alg
 
 import scala.Math.pow
 import scala.Math.sqrt
+import scala.Math.abs
 
 class Point(val x : Int, val y : Int) {
   def this(xy: (Int,Int)) = this(xy._1, xy._2)
@@ -14,13 +15,29 @@ class Point(val x : Int, val y : Int) {
     return BigDecimal(d).setScale(2, BigDecimal.RoundingMode.FLOOR).toDouble
   }
   
+  def manhattan(other:Point) : Double = {
+    val dx = abs(other.x - x)
+    val dy = abs(other.y - y)
+    dx+dy
+  }
+  
   def neighs: List[Point] = {
     var cells: List[Point] = List()
     if (x - 1 >= 0) cells = (x - 1, y) :: cells
     if (y - 1 >= 0) cells = (x, y - 1) :: cells
     if (x + 1 < Point.MAX) cells = (x + 1, y) :: cells
     if (y + 1 < Point.MAX) cells = (x, y + 1) :: cells
-    return cells
+    
+    return cells ::: diagneigs
+  }
+
+  private def diagneigs : List[Point] = {
+    var cells: List[Point] = List()
+    if (x - 1 >= 0 && y - 1 >= 0) cells = (x - 1, y - 1) :: cells
+    if (x + 1 < Point.MAX && y + 1 < Point.MAX) cells = (x + 1, y + 1) :: cells
+    if (x - 1 >= 0 && y + 1 < Point.MAX) cells = (x - 1, y + 1) :: cells
+    if (x + 1 < Point.MAX && y - 1 >= 0) cells = (x + 1, y - 1) :: cells
+    return cells    
   }
   
   override def toString : String =  "(" + x + "," + y + ")"

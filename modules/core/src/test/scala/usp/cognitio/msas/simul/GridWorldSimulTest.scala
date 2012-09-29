@@ -62,7 +62,7 @@ class GridWorldSimulTest extends Logging {
         else (Point(0, 0), Point(R / 2, R / 2))
       }
       override def communicate(who: MsasAg, neigh: MsasAg): SessionSoc = 
-        SessionSoc(who, neigh, coals(neigh))
+        SessionSoc(this, who, neigh, coals(neigh))
     }
     
     val ag1: MsasAg = new MsasAg(1, Rc(10, 0, 5)) {

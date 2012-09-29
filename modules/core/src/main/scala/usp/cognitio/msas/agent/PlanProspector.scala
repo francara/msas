@@ -14,6 +14,8 @@ trait PlanProspector {
   def space : Space
   def target : Point
   def rc: Rc
+  
+  var punish = true
 
   /**
    * Builds a list of plans using a planner.
@@ -53,6 +55,8 @@ trait PlanProspector {
   def penalty(sense: WorldSense, avail: Rc, p: Point) : Double = {
     // Required resource
     val req = sense.rcs(p.x)(p.y)
+
+    if (!punish) return 0.00
     
     if ((avail ^- req).sum == 0) return 0.00
     else return 4.00

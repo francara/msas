@@ -7,7 +7,7 @@ import usp.cognitio.msas.Rc
 
 trait WorldPhy {
   val R:Int
- val rcs: Array[Array[Rc]] = Array.tabulate(R,R)((x, y) => randRcCell(x,y))
+  val rcs: Array[Array[Rc]]
   
   def randRcCell(x: Int, y: Int) : Rc
   def randRcAg(ag: Ag) : Rc

@@ -7,7 +7,7 @@ import usp.cognitio.msas.agent.soc.Aval
 
 import scala.collection._
 
-case class SessionSoc(val who: MsasAg, val neigh: MsasAg, val coalition: Coalition) {
+case class SessionSoc(val wsoc: WorldSoc, val who: MsasAg, val neigh: MsasAg, val coalition: Coalition) {
   var allocated = false
   var alocs: Map[Ag, Rc] = Map.empty[Ag, Rc]
   
@@ -68,12 +68,7 @@ case class SessionSoc(val who: MsasAg, val neigh: MsasAg, val coalition: Coaliti
   }
 
   def coligate(): Boolean = {
-    if (coalition.members.contains(who)) return false
-
-    coalition.add(who)
-    coalition.distribute()
-
-    return true
+    return wsoc.coligate(this)
   }
 
 }
