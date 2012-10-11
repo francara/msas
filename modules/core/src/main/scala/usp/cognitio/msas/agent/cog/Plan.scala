@@ -9,10 +9,11 @@ case class Plan(var acts: List[Act]) {
   
   def add(act:Act) = acts = acts ::: act :: Nil
   def addFirst(act:Act) = acts = act :: acts
+  def addCurrent(act: Act) = {acts = acts.take(index) ::: act :: acts.drop(index)}
   
   def next : Boolean = doNext
   protected def doNext : Boolean = {
-    if (index < acts.size) {
+    if (index < acts.size-1) {
       index += 1; 
       true
     } else false
@@ -21,6 +22,8 @@ case class Plan(var acts: List[Act]) {
   def isNull = false
   
   def finished : Boolean = index >= acts.size
+  
+  def remaining : Plan = Plan(acts.drop(index))
   
   def path : Path = {
     Path(acts.filter(_.isInstanceOf[ActPhy]).map(_.asInstanceOf[ActPhy].target))

@@ -49,7 +49,6 @@ class GridWorld(val R : Int) extends WorldSoc with WorldPhy {
   }
 
   def apply(x:Int, y:Int) : GridCell = cells(x)(y)
-  
 
   def enter(ag : MsasAg, x:Int, y:Int) : GridWorld = {
     _ags += ag
@@ -66,9 +65,21 @@ class GridWorld(val R : Int) extends WorldSoc with WorldPhy {
     return cell
   }
   def move(ag:Ag, pos: Point) : Boolean = {
+    /*
+     * Verifies if the agent has got the resources.
+     */
+    val crc = rcs(pos.x)(pos.y)
+    val arc = ag.rc
+    if (crc > arc) return false
+    
     val curcell = where(ag)
     val ncell = moveToNeigh(ag, pos)
-    if (curcell != ncell) true else false
+    val result = if (curcell != ncell) true else false
+    
+    // Consume ag resource
+    if (result) ag.rc = ag.rc - crc
+    
+    return result
   }  
   def moveToNeigh(ag: Ag, p: Point) : GridCell = {
     if (where(ag).neigh(p) == where(ag)) where(ag)

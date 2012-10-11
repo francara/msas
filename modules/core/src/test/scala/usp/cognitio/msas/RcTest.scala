@@ -26,5 +26,18 @@ class RcTest extends Logging {
     assertEquals(res_res, new Rc(List(2,4)))    
   }
   
+  @Test
+  def testGe() {
+    val rc1 = Rc(1,2)
+    val rc2 = Rc(1,3)
+    val rc3 = Rc(0,3)
+    
+    assertTrue(rc2 >= rc1)
+    assertFalse(rc1 >= rc2)
+    assertTrue(rc1 >= rc1)
+    assertFalse(rc1 >= rc3)
+    assertTrue(rc2 >= rc3)
+  }
+  
   
 }

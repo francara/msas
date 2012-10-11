@@ -13,7 +13,7 @@ import usp.cognitio.msas.Rc
 case class EgoSoc(_ag: MsasAg) extends Ego(_ag) with Roundable {
   case class Candidate(val neigh: Ag, val u: Double, val session: SessionSoc)
   var coalition: Coalition = ag.body.soc.createCoalition(ag)
-
+  
   def rc: Rc = ag.rc
   def rcPi: Rc = ag.rcPi
 
@@ -48,7 +48,6 @@ case class EgoSoc(_ag: MsasAg) extends Ego(_ag) with Roundable {
      */
     val candidate = candidates.sort(_.u > _.u).head
     if (candidate.session.coligate()) {
-//      this.coalition.remove(ag)
       this.coalition = candidate.session.coalition
     }
 
@@ -73,5 +72,5 @@ case class EgoSoc(_ag: MsasAg) extends Ego(_ag) with Roundable {
     var rcEaten = eat(rcCoal, 0, q)
     return rcCoal - rcEaten
   }
-
+  
 }

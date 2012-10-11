@@ -10,6 +10,13 @@ trait WorldSoc {
   val R: Int
   var coals: Map[MsasAg, Coalition] = Map.empty[MsasAg, Coalition]
 
+  def ags : Array[MsasAg]
+
+  /**
+   * Avg agent´s wellfare.
+   */
+  def wellfare : Double = ags.map(_.u).sum/ags.size
+  
   def createCoalition(ag: Ag) : Coalition = new KLinearSampleCoalitionGame(List(ag))
   def createCoalition(ags: List[Ag]) : Coalition = new KLinearSampleCoalitionGame(ags)
   
@@ -32,5 +39,4 @@ trait WorldSoc {
     return true
   }
   
-  def sense(ag: MsasAg): WorldSense
 }

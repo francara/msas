@@ -15,6 +15,7 @@ trait WorldPhy {
   
   def ags : Array[MsasAg]
   def position(ag: Ag) : Point
+  
   def move(ag:Ag, pos: Point) : Boolean
   def sense(ag:MsasAg) : WorldSense
 }

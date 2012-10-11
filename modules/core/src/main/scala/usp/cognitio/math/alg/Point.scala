@@ -3,6 +3,7 @@ package usp.cognitio.math.alg
 import scala.Math.pow
 import scala.Math.sqrt
 import scala.Math.abs
+import Point._
 
 class Point(val x : Int, val y : Int) {
   def this(xy: (Int,Int)) = this(xy._1, xy._2)
@@ -28,7 +29,9 @@ class Point(val x : Int, val y : Int) {
     if (x + 1 < Point.MAX) cells = (x + 1, y) :: cells
     if (y + 1 < Point.MAX) cells = (x, y + 1) :: cells
     
-    return cells ::: diagneigs
+    if (DIAGONAL) cells = cells ::: diagneigs 
+    
+    return cells
   }
 
   private def diagneigs : List[Point] = {
@@ -51,6 +54,7 @@ class Point(val x : Int, val y : Int) {
 
 object Point {
   var MAX: Int = 10
+  var DIAGONAL = false
   def apply(x:Int, y:Int) = new Point(x,y)
   def apply(p : (Int,Int)) = new Point(p._1,p._2)
   

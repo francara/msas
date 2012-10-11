@@ -40,6 +40,11 @@ class Rc(val resources: List[Int]) {
 
   def sum : Int = (0 /: resources)(_ + _)
     
+  def >= (other: Rc): Boolean = !resources.zipWithIndex.exists(el => el._1 < other(el._2))
+  def < (other: Rc): Boolean = !(this >= other)
+  def <= (other: Rc) : Boolean = !resources.zipWithIndex.exists(el => el._1 > other(el._2))
+  def > (other: Rc) : Boolean = !(this <= other)
+  
   def length = resources.length
   def toList = resources
   override def toString = resources.mkString("[", ",", "]")
