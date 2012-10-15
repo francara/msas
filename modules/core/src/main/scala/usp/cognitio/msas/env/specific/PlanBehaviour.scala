@@ -40,7 +40,6 @@ trait PlanBehaviour {
   protected def doActPhy(sense: WorldSense): Unit = {
     if (plan.action.isPhy) {
       val moved = body.act(plan.action.asInstanceOf[ActPhy])
-      //      if (moved) plan.next
 
       /*
        * Tests stucked.
@@ -122,6 +121,10 @@ trait PlanOnceActAllBehaviour extends PlanBehaviour {
 
 trait PlanCompleteActAllBehaviour extends PlanOnceActAllBehaviour {
 
+  override protected def doActPhy(sense: WorldSense): Unit = {
+    if (sense.ag.u == 1) super.doActPhy(sense)
+  }
+  
   override protected def doActSoc(sense: WorldSense): Unit = {
     if (plan.finished || !plan.action.isSoc) return
     /*

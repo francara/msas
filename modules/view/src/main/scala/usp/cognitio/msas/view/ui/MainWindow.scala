@@ -59,7 +59,11 @@ abstract case class MainWindow() extends BorderPane {
    * --
    * A visited cell can not be ocuppied anymore.
    */
-  val resourceConsumable = new CheckBox() {
+  val agResourceConsumable = new CheckBox() {
+    selected = true
+  }
+
+   val cellResourceConsumable = new CheckBox() {
     selected = false
   }
 
@@ -131,18 +135,20 @@ abstract case class MainWindow() extends BorderPane {
 
       add(Lb("Planning moment:"), 1, 1)
       add(planning, 2, 1)
-      add(Lb("Resource Consumable:"), 1, 2)
-      add(resourceConsumable, 2, 2)
-      add(Lb("Same Target:"), 1, 3)
-      add(sameTarget, 2, 3)
-      add(Lb("Mean:"), 1, 4)
-      add(mean, 2, 4)
-      add(Lb("Sigma:"), 1, 5)
-      add(sigma, 2, 5)
-      add(Lb("Cell Mean:"), 1, 6)
-      add(cellmean, 2, 6)
-      add(Lb("Cell Sigma:"), 1, 7)
-      add(cellsigma, 2, 7)
+      add(Lb("Ag Rc Consumable:"), 1, 2)
+      add(agResourceConsumable, 2, 2)
+      add(Lb("Cell Rc Consumable:"), 1, 3)
+      add(cellResourceConsumable, 2, 3)
+      add(Lb("Same Target:"), 1, 4)
+      add(sameTarget, 2, 4)
+      add(Lb("Mean:"), 1, 5)
+      add(mean, 2, 5)
+      add(Lb("Sigma:"), 1, 6)
+      add(sigma, 2, 6)
+      add(Lb("Cell Mean:"), 1, 7)
+      add(cellmean, 2, 7)
+      add(Lb("Cell Sigma:"), 1, 8)
+      add(cellsigma, 2, 8)
     }
 
     val separator = new Separator()

@@ -75,7 +75,7 @@ class PlanOnceActAllWorld(val N: Int, private val _r: Int) extends GridWorld(_r)
 
   def populate() {
     for (i <- 1 to N) {
-      val ag = new MsasAg(i, Rc()) with PlanWhenNeededActBehaviour
+      val ag = new MsasAg(i, Rc()) with PlanCompleteActAllBehaviour
       ag.init(this, this)
       enter(ag)
     }
