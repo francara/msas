@@ -8,6 +8,10 @@ import usp.cognitio.msas.Rc
 import sun.security.krb5.Config
 import usp.cognitio.math.alg.Point
 import scalafx.scene.Group
+import scalafx.stage.Stage
+import javafx.stage.StageStyle
+import scalafx.scene.Scene
+import usp.cognitio.msas.view.ui.AgWindow
 
 /*
  *********************************** 
@@ -15,7 +19,7 @@ import scalafx.scene.Group
  *********************************** 
  */
 case class WConfig(val grid: Boolean = true, val color: Boolean = true)
-case class World(val vworld: GridWorld) extends Group {
+case class World(val vworld: GridWorld, _x: Double, _y: Double) extends Group {
   def N = vworld.ags.size
   def R = vworld.R
   var config = WConfig(true, true)
@@ -25,9 +29,9 @@ case class World(val vworld: GridWorld) extends Group {
 
   var cells: Array[Array[Cell]] = Array.tabulate(vworld.R, vworld.R)((x, y) => null)
 
-  def cell(x:Int, y:Int) = cells(x)(y)
+  def cell(x: Int, y: Int) = cells(x)(y)
   def cell(p: Point) = cells(p.x)(p.y)
-  
+
   val width = (cellWidth + 2 * cellStroke) * vworld.R
   val height = (cellHeight + 2 * cellStroke) * vworld.R
   children = new Rectangle() {
@@ -35,8 +39,6 @@ case class World(val vworld: GridWorld) extends Group {
     height = (cellHeight + 2 * cellStroke) * vworld.R
     fill = Color.LIGHTGRAY;
   } :: Nil
-
-  def content: List[Rectangle] = cells.toList.flatMap(_.toList)
 
   /*
    * Cells.
@@ -46,15 +48,27 @@ case class World(val vworld: GridWorld) extends Group {
     val cy = (cellHeight + 2 * cellStroke) * cell.y
 
     cells(cell.x)(cell.y) = new Cell(this, cell.rc) {
-      width = cellWidth
-      height = cellHeight
-      x = cx; y = cy
-      strokeWidth = cellStroke
+      def width = cellWidth
+      def height = cellHeight
+      def x = cx
+      def y = cy
+      def strokeWidth = cellStroke
     }
-
     children.add(cells(cell.x)(cell.y))
-    
   }))
+
+  def world = this
+  val stage = new Stage(StageStyle.UTILITY) {
+    title = "Simulação"
+    scene = new Scene {
+      content = world
+    }
+    x = _x; y = _y
+  }
+  stage.show()
+
+  def x = stage.x
+  def y = stage.y
 
   def update() = cells.foreach(_.foreach(_.update()))
   def addLayer(layer: Layer) = children.add(layer)
@@ -65,8 +79,11 @@ case class World(val vworld: GridWorld) extends Group {
  ************   AgWorld   ************ 
  ************************************* 
  */
-case class AgWorld(override val vworld: GridWorld) extends World(vworld) {
+case class AgWorld(override val vworld: GridWorld, override val _x: Double, override val _y: Double)
+  extends World(vworld, _x, _y) {
   var ags = scala.collection.mutable.Map.empty[Ag, Agent]
+
+  var agWindow: AgWindow = null
 
   def agents: List[Character] = ags.values.toList
   def agent(id: Long): Agent = ags.find(el => el._1.id == id).get._2
@@ -77,8 +94,12 @@ case class AgWorld(override val vworld: GridWorld) extends World(vworld) {
   vworld.ags.foreach(ag => {
     val vcell = vworld.whereIs(ag)
     val cell = cells(vcell.x)(vcell.y)
-    ags(ag) = Agent(ag, cell)
+    val agent = Agent(ag, cell)
+    ags(ag) = agent
+    world.children.add(agent)
   })
+  
+  addLayer(PhaseLayer(this))
 
   def whereIs(ag: Ag): Cell = {
     val vcell = vworld.whereIs(ag)
@@ -91,7 +112,11 @@ case class AgWorld(override val vworld: GridWorld) extends World(vworld) {
     vworld.ags.foreach(ag => {
       agent(ag.id).pos(whereIs(ag))
     })
+  }
 
+  def showWindow(agent: Agent) {
+    if (agWindow != null) agWindow.close()
+    agWindow = new AgWindow(agent)
   }
 }
 
@@ -100,12 +125,13 @@ case class AgWorld(override val vworld: GridWorld) extends World(vworld) {
  ************   PlanWorld   ************ 
  *************************************** 
  */
-case class PlanWorld(val _v: GridWorld) extends World(_v) {
+case class PlanWorld(val _v: GridWorld, override val _x: Double, override val _y: Double)
+  extends World(_v, _x, _y) {
   var nodes: Array[Array[NodeStar]] = Array.tabulate(vworld.R, vworld.R)((x, y) => null)
 
   def open(pos: Point): NodeStar = createNode(pos, true)
   def close(pos: Point): NodeStar = createNode(pos, false)
-  private def createNode(pos: Point, open:Boolean): NodeStar = {
+  private def createNode(pos: Point, open: Boolean): NodeStar = {
     val cell = cells(pos.x)(pos.y)
     val node = NodeStar(cell, open)
     nodes(pos.x)(pos.y) = node

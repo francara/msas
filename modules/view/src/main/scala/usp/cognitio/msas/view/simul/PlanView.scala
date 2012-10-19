@@ -42,9 +42,9 @@ object PlanView extends JFXApp {
 
   val (ag1, ag2) = (grid.ag(1), grid.ag(2))
 
-  val world = new PlanWorld(grid) {
+  val world = new PlanWorld(grid, 10, 10) {
     config = WConfig(true, false)
-    cells(ag1.target.x)(ag1.target.y) = TargetCell(this, Rc.nil)
+//    cells(ag1.target.x)(ag1.target.y) = TargetCell(this, Rc.nil)
     update()
   }
 

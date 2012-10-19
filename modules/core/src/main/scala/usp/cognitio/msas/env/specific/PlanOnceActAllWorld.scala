@@ -13,7 +13,7 @@ import usp.cognitio.msas.env.spy.PlanSpy
 
 /**
  * World with agents that plan once and act.
- * 
+ *
  * Agent behavior is configures (PlanBehaviour).
  * Spy to save a file with actions (PlanSpy).
  */
@@ -33,10 +33,16 @@ class PlanOnceActAllWorld(val N: Int, private val _r: Int) extends GridWorld(_r)
   def ksigma = kmean / 2
 
   /*
+   * Semaphores
+   */
+  var socialSem: Boolean = false
+  var phySem: Boolean = false
+  
+  /*
    * Initialize cell resources.
    */
   for (x <- 0 to R) for (y <- 0 to R) randRcCell(x, y)
-  
+
   override def randRcCell(x: Int, y: Int): Rc = {
     if (randCell == null) randCell = new RandomDataImpl()
     if (randsCell == null) randsCell = Array.tabulate(Rc.DIM)(k => new RandomDataImpl())
@@ -75,7 +81,22 @@ class PlanOnceActAllWorld(val N: Int, private val _r: Int) extends GridWorld(_r)
 
   def populate() {
     for (i <- 1 to N) {
-      val ag = new MsasAg(i, Rc()) with PlanCompleteActAllBehaviour
+      /*
+       * BEHAVIOUR
+       * ---------
+       */
+      case class PlanAg(world: PlanOnceActAllWorld, _i: Int, _rc: Rc) extends MsasAg(_i,_rc)
+      val ag = new PlanAg(this, i, Rc()) with PlanCompleteActAllBehaviour {
+        override def act(sense: WorldSense) {
+          if (plan.isNull) return super.act(sense)
+          
+          if (world.phySem && plan.action.isPhy) return
+          else if (world.socialSem && plan.action.isSoc) return
+          else return super.act(sense)
+        }
+      }
+      ag.stopWenStucked
+
       ag.init(this, this)
       enter(ag)
     }

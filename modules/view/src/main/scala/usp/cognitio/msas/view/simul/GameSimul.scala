@@ -41,7 +41,7 @@ object GameView extends JFXApp {
       override def v: Double = 0.0
   }
   
-  val world = AgWorld(grid)
+  val world = AgWorld(grid, 10, 10)
   stage = new Stage {
     title = "Simulação"
     scene = new Scene {

@@ -14,6 +14,14 @@ import scala.math.min
 import scalafx.scene.paint.Color
 
 trait Layer extends Group
+case class PhaseLayer(world: AgWorld) extends Layer {
+  children.add(Stucked(world.cell(1,1)))
+//	world.cells.foreach(_.foreach( cell => {
+//	  children.add(Stucked(cell))
+//	}
+//	))
+}
+
 /**
  * Show a coalition in a world.
  */

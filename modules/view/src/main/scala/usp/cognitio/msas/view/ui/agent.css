@@ -1,0 +1,31 @@
+.root {
+  -fx-glass-color: rgba(95, 158, 160, 0.5);
+}
+
+.modal-dialog {
+  -fx-padding: 20;
+  -fx-spacing: 10;
+  -fx-alignment: center;
+  -fx-font-size: 20;
+  -fx-background-color: linear-gradient(to bottom, derive(-fx-glass-color, 20%), -fx-glass-color);
+  -fx-border-color: derive(-fx-glass-color, -20%);
+  -fx-border-width: 3;
+  -fx-background-insets: 0;
+  -fx-border-insets: 0;
+  -fx-border-radius: 6;
+  -fx-background-radius: 6;
+}
+
+.modal-dialog:pressed {
+  -fx-cursor: move;
+}
+
+.modal-dialog .button:pressed {
+  -fx-cursor: default;
+}
+
+.panel {
+    -fx-background-color: #74A3A3;
+    -fx-padding: 15;
+    -fx-spacing: 10;
+}

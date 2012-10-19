@@ -120,9 +120,19 @@ trait PlanOnceActAllBehaviour extends PlanBehaviour {
 }
 
 trait PlanCompleteActAllBehaviour extends PlanOnceActAllBehaviour {
-
+  var STOP_WHEN_STUCKED = 0
+  var STOP_WHEN_INSUFFICENT = 1
+  
+  var stopWhen : Int = STOP_WHEN_INSUFFICENT 
+  
+  def stopWenStucked {stopWhen = STOP_WHEN_STUCKED}
+  def stopWenInsufficient {stopWhen = STOP_WHEN_INSUFFICENT}
+  def isStopWhenInsufficient = stopWhen == STOP_WHEN_INSUFFICENT
+  def isStopWhenStucked = !isStopWhenInsufficient
+  
   override protected def doActPhy(sense: WorldSense): Unit = {
-    if (sense.ag.u == 1) super.doActPhy(sense)
+    if (isStopWhenInsufficient && sense.ag.u == 1) super.doActPhy(sense)
+    else if (isStopWhenStucked) super.doActPhy(sense)
   }
   
   override protected def doActSoc(sense: WorldSense): Unit = {

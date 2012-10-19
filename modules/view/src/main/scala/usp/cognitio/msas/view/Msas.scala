@@ -8,14 +8,17 @@ import usp.cognitio.msas.view.ui.SimulWindow
 
 object Msas extends JFXApp {
   
+  var simul : SimulWindow = null
+  
   stage = new Stage {
     title = "MsAs - Simulator"
     scene = new Scene {
       content = new MainWindow() {
         def onStart(once: Boolean, consumable: Boolean, sameTarget: Boolean,
           mean: Double, sigma: Double,
-          cmean: Double, csigma: Double) {
-        	SimulWindow( 20 + width.doubleValue(), 10)
+          cmean: Double, csigma: Double,
+          phySema: Boolean, socSema: Boolean) {
+        	simul = SimulWindow( 20 + width.doubleValue(), 10, phySema, socSema)
         }
         def onPlan() {
 
@@ -23,6 +26,12 @@ object Msas extends JFXApp {
         def onCoal() {
 
         }
+        def onSema(phySema: Boolean, socSema: Boolean) {
+          if (simul == null) return
+          simul.grid.phySem = phySema
+          simul.grid.socialSem = socSema
+        }
+        
       }
     }
     x = 10; y = 10

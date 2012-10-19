@@ -13,7 +13,7 @@ import usp.cognitio.msas.view.world.AgWorld
 import usp.cognitio.msas.view.world.CoalLayer
 import usp.cognitio.msas.Rc
 
-case class SimulWindow(_x: Double, _y: Double) {
+case class SimulWindow(_x: Double, _y: Double, phySema: Boolean, socSema: Boolean) {
   Rc.DIM = 5
   val grid = new PlanOnceActAllWorld(15, 30) {
     override def mean: Double = R / 2
@@ -33,8 +33,10 @@ case class SimulWindow(_x: Double, _y: Double) {
 
       Rc(rc_ks)
     }
-
+    
   }
+  grid.phySem = phySema
+  grid.socialSem = socSema
   grid.populate()
 
   val (ag1, ag2) = (grid.ag(1), grid.ag(2))
@@ -43,19 +45,10 @@ case class SimulWindow(_x: Double, _y: Double) {
     override def v: Double = 0.0
   }
 
-  val world = AgWorld(grid)
-  val stage = new Stage(StageStyle.UTILITY) {
-    title = "Simulação"
-    scene = new Scene {
-      content = world :: world.agents
-    }
-    x = _x; y = _y
-  }
+  val world = AgWorld(grid, _x, _y)
 
   val layer = CoalLayer(world, coalition)
   world.addLayer(layer)
-
-  stage.show()
 
   new Thread() {
     override def run() {
@@ -72,4 +65,11 @@ case class SimulWindow(_x: Double, _y: Double) {
     }
   }.start()
 
+  def freeze() {
+    
+  }
+  
+  def unfreeze() {}
+  
+  
 }

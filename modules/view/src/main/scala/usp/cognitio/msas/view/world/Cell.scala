@@ -3,13 +3,28 @@ import usp.cognitio.msas.Rc
 import scalafx.scene.shape.Rectangle
 import scalafx.scene.paint.Color
 import scalafx.scene.Group
+import scalafx.scene.control.Label
 
-case class Cell(val world: World, var rc: Rc) extends Rectangle {
-  stroke = Color.BROWN
+abstract case class Cell(val world: World, var rc: Rc) extends Group {
+  def width: Double
+  def height : Double
+  def x : Double
+  def y : Double
+  def cell = this
+  
+  val rec = new Rectangle {
+	 stroke = Color.BROWN
+	 x = cell.x
+	 y = cell.y
+	 width = cell.width
+	 height = cell.height
+  }
+  children.add(rec)
+
   update()
   
   def update() {
-    fill =
+    rec.fill =
       if (!world.config.color) Color.WHITE
       else if (rc.sum == 0) Color.web("#FFFFFF")
       else if (rc.sum == 1) Color.web("#CBCDD1")
@@ -19,29 +34,45 @@ case class Cell(val world: World, var rc: Rc) extends Rectangle {
       else if (rc.sum == 5) Color.web("#616469")
       else Color.web("4A4D52")
   }
+
 }
 
-case class TargetCell(override val world: World, var _rc: Rc) extends Cell(world,_rc) {
-  fill = Color.DARKGREEN
-  override def update() {}
+case class Stucked(cell: Cell) extends Group {
+  val CELL_SCALE = 0.4
+  val rec = new Rectangle {
+    width = cell.width * CELL_SCALE
+    height = cell.height * CELL_SCALE
+    x = cell.x
+    y = cell.y + cell.height - cell.height * CELL_SCALE
+    fill = Color.rgb(108,127,184, 0.4)
+    stroke = Color.rgb(108,127,184)
+    strokeWidth = 0.5
+  }
+  val lb = new Label {
+    text = "Sk"
+    
+  }
+  children.add(rec)
+  children.add(lb)  
 }
+
 
 case class NodeStar(val cell: Cell, var open: Boolean) extends Group {
   val CELL_SCALE = 0.4
   val r1 = new Rectangle {
-    x = cell.x.value + cell.width.value/3
-    y = cell.y.value + cell.height.value/3
-    width = cell.width.value * CELL_SCALE
-    height = cell.height.value * CELL_SCALE
+    x = cell.x + cell.width/3
+    y = cell.y + cell.height/3
+    width = cell.width * CELL_SCALE
+    height = cell.height * CELL_SCALE
     fill = Color.DARKBLUE
     stroke = Color.DARKBLUE
     strokeWidth = 2
   }
   val r2 = new Rectangle {
-    x = cell.x.value + cell.width.value/3
-    y = cell.y.value + cell.height.value/3
-    width = cell.width.value * CELL_SCALE
-    height = cell.height.value * CELL_SCALE
+    x = cell.x + cell.width/3
+    y = cell.y + cell.height/3
+    width = cell.width * CELL_SCALE
+    height = cell.height * CELL_SCALE
     fill = if (open) Color.WHITE else (Color.DARKBLUE)
     stroke = Color.DARKBLUE
     strokeWidth = 2

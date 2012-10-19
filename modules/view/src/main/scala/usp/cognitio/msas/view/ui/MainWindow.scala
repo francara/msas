@@ -33,15 +33,17 @@ object MainWindowConfigs {
 }
 
 abstract case class MainWindow() extends BorderPane {
-  
-  def onStart(once: Boolean, 
-      consumable: Boolean, 
-      sameTarget: Boolean, 
-      mean: Double, sigma: Double, 
-      cmean: Double, csigma: Double) : Unit
-  def onPlan : Unit
-  def onCoal : Unit
-  
+
+  def onStart(once: Boolean,
+    consumable: Boolean,
+    sameTarget: Boolean,
+    mean: Double, sigma: Double,
+    cmean: Double, csigma: Double,
+    phySema: Boolean, socSema: Boolean): Unit
+  def onPlan: Unit
+  def onCoal: Unit
+  def onSema(phySema: Boolean, socSema: Boolean): Unit
+
   /*
    ********************************************
    *********   ENVIRONMENT SETTINGS   *********
@@ -63,7 +65,7 @@ abstract case class MainWindow() extends BorderPane {
     selected = true
   }
 
-   val cellResourceConsumable = new CheckBox() {
+  val cellResourceConsumable = new CheckBox() {
     selected = false
   }
 
@@ -93,14 +95,28 @@ abstract case class MainWindow() extends BorderPane {
   val cellsigma = new TextField()
 
   /*
-   *******************************************
-   *********   SIMULATION SETTINGS   *********
-   *******************************************
+   ******************************************
+   *********   EXECUTION SETTINGS   *********
+   ******************************************
    */
 
-  /**
-   * Clock tick.
-   */
+  val phySema = new CheckBox() {
+    selected = false
+  }
+  phySema.onAction = new EventHandler[ActionEvent] {
+    def handle(event: ActionEvent) {
+      onSema(phySema.selected.getValue(), socSema.selected.getValue())
+    }
+  }
+
+  val socSema = new CheckBox() {
+    selected = false
+  }
+  socSema.onAction = new EventHandler[ActionEvent] {
+    def handle(event: ActionEvent) {
+      onSema(phySema.selected.getValue(), socSema.selected.getValue())
+    }
+  }
 
   minHeight = 280
 
@@ -149,6 +165,10 @@ abstract case class MainWindow() extends BorderPane {
       add(cellmean, 2, 7)
       add(Lb("Cell Sigma:"), 1, 8)
       add(cellsigma, 2, 8)
+      add(Lb("Phy Sema:"), 1, 9)
+      add(phySema, 2, 9)
+      add(Lb("Soc Sema:"), 1, 10)
+      add(socSema, 2, 10)
     }
 
     val separator = new Separator()
@@ -168,14 +188,14 @@ abstract case class MainWindow() extends BorderPane {
       var _pressed = false
       onAction = new EventHandler[ActionEvent] {
         def handle(event: ActionEvent) {
-        	_pressed = true
-        	text = "Stop"
-        	onStart(
-        	    if (planning.value == PLANNING_ONCE) true else false,
-        	    true, true,
-        	    0.00, 0.00,
-        	    0.00, 0.00
-        	)
+          _pressed = true
+          text = "Stop"
+          onStart(
+            if (planning.value == PLANNING_ONCE) true else false,
+            true, true,
+            0.00, 0.00,
+            0.00, 0.00,
+            phySema.selected.getValue(), socSema.selected.getValue())
         }
       }
     }
@@ -185,28 +205,5 @@ abstract case class MainWindow() extends BorderPane {
     hbox.setAlignment(Pos.CENTER_RIGHT);
     return hbox;
   }
-
-}
-
-case class Lb(txt: String) extends Text(txt) { font = Font.font("Arial", FontWeight.BOLD, 12) }
-
-case class Bt(lb: String) extends StackPane {
-  val icon = new Rectangle(30.0, 25.0)
-  icon.setFill(new LinearGradient(0.0, 0.0, 0.0, 1.0, true, CycleMethod.NO_CYCLE,
-    List(
-      new Stop(0, Color.web("#4977A3")),
-      new Stop(0.5, Color.web("#B0C6DA")),
-      new Stop(1, Color.web("#9CB6CF")))).delegate);
-
-  icon.setStroke(Color.web("#D0E6FA"));
-  icon.setArcHeight(3.5);
-  icon.setArcWidth(3.5);
-
-  val text = new Text(lb);
-  text.setFont(Font.font("Verdana", FontWeight.BOLD, 18));
-  text.setFill(Color.WHITE);
-  text.setStroke(Color.web("#7080A0"));
-
-  this.getChildren().addAll(icon, text);
 
 }
