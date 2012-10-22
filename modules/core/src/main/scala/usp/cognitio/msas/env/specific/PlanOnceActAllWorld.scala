@@ -10,6 +10,7 @@ import usp.cognitio.msas.env.spy.SpyFile
 import usp.cognitio.msas.env.WorldSense
 import usp.cognitio.msas.env.SessionSoc
 import usp.cognitio.msas.env.spy.PlanSpy
+import org.apache.log4j.Logger
 
 /**
  * World with agents that plan once and act.
@@ -18,6 +19,7 @@ import usp.cognitio.msas.env.spy.PlanSpy
  * Spy to save a file with actions (PlanSpy).
  */
 class PlanOnceActAllWorld(val N: Int, private val _r: Int) extends GridWorld(_r) with PlanSpy {
+  override val logger = Logger.getLogger(getClass().getName());
 
   Point.DIAGONAL = true
   val spy = SpyFile()
@@ -80,6 +82,11 @@ class PlanOnceActAllWorld(val N: Int, private val _r: Int) extends GridWorld(_r)
   }
 
   def populate() {
+    def situation(ag: MsasAg) = 
+      "[" + ag + "] SITUATION: " +
+      "{insufficient: " + ag.insufficient + ", " +
+      "stucked: " + ag.stucked + ", " +
+      "stagnated: " + ag.stagnated + "}"
     for (i <- 1 to N) {
       /*
        * BEHAVIOUR
@@ -92,7 +99,10 @@ class PlanOnceActAllWorld(val N: Int, private val _r: Int) extends GridWorld(_r)
           
           if (world.phySem && plan.action.isPhy) return
           else if (world.socialSem && plan.action.isSoc) return
-          else return super.act(sense)
+          else {
+            logger.debug(situation(this))
+            return super.act(sense)
+          }
         }
       }
       ag.stopWenStucked

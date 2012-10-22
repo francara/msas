@@ -11,6 +11,7 @@ trait PlanMapper {
   
   def mapit(sense:WorldSense, plan: Plan) : Rc = {
     val moves = plan.acts.filter(act => act.isInstanceOf[ActPhy]).map(act => act.asInstanceOf[ActPhy].target)
+    if (moves == null || moves.isEmpty) return Rc.nil
     val rcs : List[Rc]= moves.map(pt => sense.rcs(pt.x)(pt.y))
     return Rc.total(rcs)
   }

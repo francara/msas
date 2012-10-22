@@ -31,35 +31,42 @@ trait PlanBehaviour {
   var wellfare = 0.0
 
   var moveStucked = 0
+
+  /*
+   * Plan situation.
+   */
+  def insufficient = rc < rcPi
   def stucked = moveStucked > lambda
+  def stagnated = wellfareStucked > lambda
 
   def act(sense: WorldSense) {
     throw new UnsupportedOperationException()
   }
 
-  protected def doActPhy(sense: WorldSense): Unit = {
-    if (plan.action.isPhy) {
-      val moved = body.act(plan.action.asInstanceOf[ActPhy])
+  protected def doActPhy(sense: WorldSense): Boolean = {
+    if (!plan.action.isPhy) return false
+    val moved = body.act(plan.action.asInstanceOf[ActPhy])
 
-      /*
-       * Tests stucked.
-       */
-      if (!moved) {
-        moveStucked += 1
-      } else {
-        moveStucked = 0
-      }
-
-      if (moved) plan.next
-      return
+    /*
+     * Tests stucked.
+    */
+    if (!moved) {
+      moveStucked += 1
+    } else {
+      moveStucked = 0
     }
+
+    return moved
   }
 
-  /**
-   * Stops social iteration.
-   */
-  protected def stop(): Boolean = {
-    if (wellfareStucked > lambda) return true
+  protected def doActSoc(sense: WorldSense): Boolean = {
+    if (plan.finished || !plan.action.isSoc) return false
+    /*
+     * The environment may have changed.
+     */
+    val nrcPi = ecog.mapit(sense, plan)
+    if (nrcPi != rcPi) rcPi = nrcPi
+    val coligated = esoc.act(sense, plan)
 
     val currentWellfare = body.soc.wellfare
     if (wellfare != currentWellfare) {
@@ -68,8 +75,10 @@ trait PlanBehaviour {
     } else {
       wellfareStucked += 1
     }
-    false
+    
+    return coligated
   }
+
 }
 
 trait PlanOnceActAllBehaviour extends PlanBehaviour {
@@ -92,8 +101,8 @@ trait PlanOnceActAllBehaviour extends PlanBehaviour {
      * if the target has already been reached.
      */
     if (plan.isNull) return
-    doActPhy(sense)
-    doActSoc(sense)
+    if (doActPhy(sense)) plan.next
+    if (doActSoc(sense)) plan.next
 
     /*
      * Decide the physical action based
@@ -104,53 +113,36 @@ trait PlanOnceActAllBehaviour extends PlanBehaviour {
   def merge(plan1: Plan, plan2: Plan): Plan = {
     return plan1
   }
-
-  protected def doActSoc(sense: WorldSense): Unit = {
-    if (plan.finished || !plan.action.isSoc) return
-    /*
-     * The environment may have changed.
-     */
-    val nrcPi = ecog.mapit(sense, plan)
-    if (nrcPi == rcPi) return
-
-    rcPi = nrcPi
-    if (plan.action.isSoc) esoc.act(sense, plan)
-    plan.next
-  }
 }
 
 trait PlanCompleteActAllBehaviour extends PlanOnceActAllBehaviour {
   var STOP_WHEN_STUCKED = 0
   var STOP_WHEN_INSUFFICENT = 1
-  
-  var stopWhen : Int = STOP_WHEN_INSUFFICENT 
-  
-  def stopWenStucked {stopWhen = STOP_WHEN_STUCKED}
-  def stopWenInsufficient {stopWhen = STOP_WHEN_INSUFFICENT}
+
+  var stopWhen: Int = STOP_WHEN_INSUFFICENT
+
+  def stopWenStucked { stopWhen = STOP_WHEN_STUCKED }
+  def stopWenInsufficient { stopWhen = STOP_WHEN_INSUFFICENT }
   def isStopWhenInsufficient = stopWhen == STOP_WHEN_INSUFFICENT
   def isStopWhenStucked = !isStopWhenInsufficient
-  
-  override protected def doActPhy(sense: WorldSense): Unit = {
-    if (isStopWhenInsufficient && sense.ag.u == 1) super.doActPhy(sense)
-    else if (isStopWhenStucked) super.doActPhy(sense)
+
+  override protected def doActPhy(sense: WorldSense): Boolean = {
+    if (isStopWhenInsufficient && sense.ag.u == 1) return super.doActPhy(sense)
+    else if (isStopWhenStucked) return super.doActPhy(sense)
+    else return false
   }
-  
-  override protected def doActSoc(sense: WorldSense): Unit = {
-    if (plan.finished || !plan.action.isSoc) return
+
+  override protected def doActSoc(sense: WorldSense): Boolean = {
+    if (plan.finished || !plan.action.isSoc) return false
     /*
      * Verifies if social iteration continues.
      */
-    if (stop()) {
+    if (stagnated) {
       plan.next
-      return
+      return false
     }
 
-    /*
-     * The environment may have changed.
-     */
-    val nrcPi = ecog.mapit(sense, plan)
-    rcPi = nrcPi
-    if (plan.action.isSoc) esoc.act(sense, plan)
+    return super.doActSoc(sense)
   }
 
 }
@@ -183,8 +175,8 @@ trait PlanWhenNeededActBehaviour extends PlanCompleteActAllBehaviour {
       moveStucked = 0
     }
 
-    doActPhy(sense)
-    doActSoc(sense)
+    if (doActPhy(sense)) plan.next
+    if (doActSoc(sense)) plan.next
 
     /*
      * Decide the physical action based

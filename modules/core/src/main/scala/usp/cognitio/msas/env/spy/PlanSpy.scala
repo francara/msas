@@ -21,9 +21,6 @@ trait PlanSpy extends GridWorld {
   override def move(ag: Ag, pos: Point): Boolean = {
     val moved = super.move(ag, pos)
     if (moved) spy.moving(ag, pos)
-    if (!moved) logger.debug("Ag:" + ag + " MOVE DENIED!")
-    
-    if (ag.asInstanceOf[PlanBehaviour].stucked) logger.debug("Ag:" + ag + " STUCKED!")
     
     return moved
   }

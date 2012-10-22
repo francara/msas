@@ -20,9 +20,9 @@ case class EgoSoc(_ag: MsasAg) extends Ego(_ag) with Roundable {
   def u: Double = if (rcPi.sum > 0) round(consume(rc, rcPi.sum).sum.asInstanceOf[Double] / rcPi.sum) else 1.0
   def u(al: Rc): Double = if (rcPi.sum > 0) round(consume(al, rcPi.sum).sum.asInstanceOf[Double] / rcPi.sum) else 1.0
 
-  def act(sense: WorldSense, plan: Plan): Plan = {
+  def act(sense: WorldSense, plan: Plan): Boolean = {
     val action = plan.action
-    if (action.isPhy) return plan
+    if (action.isPhy) return false
 
     var candidates: List[Candidate] = Nil
     /*
@@ -41,7 +41,7 @@ case class EgoSoc(_ag: MsasAg) extends Ego(_ag) with Roundable {
     /*
      * !!! GUARD CONDITION   !!!
      */
-    if (candidates.size == 0) return plan
+    if (candidates.size == 0) return false
 
     /*
      * Associate with the best coalition.
@@ -49,9 +49,11 @@ case class EgoSoc(_ag: MsasAg) extends Ego(_ag) with Roundable {
     val candidate = candidates.sort(_.u > _.u).head
     if (candidate.session.coligate()) {
       this.coalition = candidate.session.coalition
+      return true
+    } else {
+      return false
     }
 
-    return plan
   }
 
   /** Avaliates the resource usage. Which resources I would use. */
