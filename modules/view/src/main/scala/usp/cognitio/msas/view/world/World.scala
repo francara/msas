@@ -71,7 +71,18 @@ case class World(val vworld: GridWorld, _x: Double, _y: Double) extends Group {
   def y = stage.y
 
   def update() = cells.foreach(_.foreach(_.update()))
-  def addLayer(layer: Layer) = children.add(layer)
+  
+  var layers: List[Layer] = Nil
+  
+  def containsLayer(layer: Layer) = layers.contains(layer)
+  def addLayer(layer: Layer) = {
+    layers = layer :: layers
+    children.add(layer)
+  }
+  def removeLayer(layer: Layer) = {
+    layers = layers.remove(_ == layer)
+    children.remove(layer)
+  }
 }
 
 /*

@@ -56,6 +56,8 @@ case class Member(coal: Coalition, agent: Agent) extends Character {
   fill = new Color(Color.BLUEVIOLET.opacity(0.3))
   stroke = Color.BLUEVIOLET
   strokeWidth = 2
+  centerX = agent.centerX.getValue()
+  centerY = agent.centerY.getValue()
 }
 
 case class Resource(q: Int) extends Rectangle {

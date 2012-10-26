@@ -35,7 +35,7 @@ object PlanView extends JFXApp {
 
       Rc(rc_ks)
     }
-    def punish(p: Boolean) = ags.foreach(_.ecog.punish = p)
+    def punish(p: Boolean) = ags.foreach(_.ecog.enablePunishment = p)
 
   }
   grid.populate()

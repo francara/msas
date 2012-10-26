@@ -15,7 +15,7 @@ trait PlanProspector {
   def target : Point
   def rc: Rc
   
-  var punish = true
+  var enablePunishment = true
 
   /**
    * Builds a list of plans using a planner.
@@ -45,6 +45,10 @@ trait PlanProspector {
     return List(Plan(acts))
   }
   
+  def punish(plan: Plan) = {
+    
+  }
+  
   /**
    * Calculates a penalty for lack of resources.
    * 
@@ -56,7 +60,7 @@ trait PlanProspector {
     // Required resource
     val req = sense.rcs(p.x)(p.y)
 
-    if (!punish) return 0.00
+    if (!enablePunishment) return 0.00
     
     if ((avail ^- req).sum == 0) return 0.00
     else return 4.00

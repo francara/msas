@@ -1,31 +1,30 @@
 package usp.cognitio.msas.view.ui
-import usp.cognitio.msas.view.ui.MainWindowConfigs._
-import javafx.scene.layout.HBox
+import javafx.event.EventHandler
+import javafx.event.ActionEvent
 import javafx.geometry.Insets
+import javafx.geometry.Orientation
+import javafx.geometry.Pos
+import javafx.scene.input.MouseEvent
+import javafx.scene.layout.HBox
+import javafx.scene.layout.Priority
+import scalafx.scene.control.Button.sfxButton2jfx
+import scalafx.scene.control.Separator.sfxSeparator2jfx
+import scalafx.scene.control.Button
+import scalafx.scene.control.CheckBox
+import scalafx.scene.control.Separator
+import scalafx.scene.control.TextField
+import scalafx.scene.layout.BorderPane.sfxBorderPane2jfx
+import scalafx.scene.layout.GridPane.sfxGridPane2jfx
+import scalafx.scene.layout.StackPane.sfxStackPane2jfx
+import scalafx.scene.layout.VBox.sfxVBox2jfx
 import scalafx.scene.layout.BorderPane
 import scalafx.scene.layout.GridPane
-import scalafx.scene.text.Text
-import scalafx.scene.control.ComboBox
-import scalafx.scene.control.Separator
-import scalafx.scene.layout.VBox
-import javafx.geometry.Orientation
-import javafx.beans.value.ChangeListener
-import scalafx.scene.control.CheckBox
-import scalafx.scene.control.TextField
-import scalafx.scene.text.Font
-import javafx.scene.text.FontWeight
-import javafx.scene.shape.Rectangle
-import javafx.scene.paint.Stop
-import javafx.scene.layout.Priority
-import javafx.scene.paint.Color
-import javafx.geometry.Pos
-import scalafx.scene.paint.LinearGradient
-import scalafx.scene.paint.CycleMethod
-import scalafx.scene.Group
 import scalafx.scene.layout.StackPane
-import scalafx.scene.control.Button
-import javafx.event.ActionEvent
-import javafx.event.EventHandler
+import scalafx.scene.layout.VBox
+import usp.cognitio.msas.view.ui.MainWindowConfigs.PLANNING_ALWAYS
+import usp.cognitio.msas.view.ui.MainWindowConfigs.PLANNING_ONCE
+import scalafx.scene.control.ComboBox
+import usp.cognitio.msas.view.Msas
 
 object MainWindowConfigs {
   val PLANNING_ONCE = "Planning Once";
@@ -132,7 +131,21 @@ abstract case class MainWindow() extends BorderPane {
     hbox.setStyle("-fx-background-color: #336699;");
 
     val stack = new StackPane();
-    val bt = Bt("C")
+    val bt = new Bt("C") {
+      var _show = true
+      onMouseClicked = new EventHandler[MouseEvent] {
+        def handle(event: MouseEvent) {
+          if (_show) {
+            _show = false
+            onCoal
+          } else {
+            _show = true
+            Msas.removeCoal
+            Msas.hideCoal
+          }
+        }
+      }
+    }
     val plan = Bt("P")
 
     hbox.getChildren().add(bt);

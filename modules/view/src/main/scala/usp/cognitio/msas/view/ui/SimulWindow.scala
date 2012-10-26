@@ -1,6 +1,5 @@
 package usp.cognitio.msas.view.ui
 import scala.util.Random
-
 import javafx.application.Platform
 import javafx.stage.StageStyle
 import scalafx.scene.Scene
@@ -12,6 +11,7 @@ import usp.cognitio.msas.env.specific.PlanOnceActAllWorld
 import usp.cognitio.msas.view.world.AgWorld
 import usp.cognitio.msas.view.world.CoalLayer
 import usp.cognitio.msas.Rc
+import usp.cognitio.msas.view.Msas
 
 case class SimulWindow(_x: Double, _y: Double, phySema: Boolean, socSema: Boolean) {
   Rc.DIM = 5
@@ -39,17 +39,9 @@ case class SimulWindow(_x: Double, _y: Double, phySema: Boolean, socSema: Boolea
   grid.socialSem = socSema
   grid.populate()
 
-  val (ag1, ag2) = (grid.ag(1), grid.ag(2))
-  val coalition = new Coalition(List(ag1, ag2)) {
-    override def shapley: List[Double] = 0.0 :: 0.0 :: Nil
-    override def v: Double = 0.0
-  }
 
   val world = AgWorld(grid, _x, _y)
-
-  val layer = CoalLayer(world, coalition)
-  world.addLayer(layer)
-
+  
   new Thread() {
     override def run() {
       while (!grid.satisfied()) {

@@ -12,6 +12,9 @@ import usp.cognitio.msas.agent.ActPhy
 import usp.cognitio.msas.agent.ActSoc
 
 trait PlanBehaviour {
+  var STOP_WHEN_STUCKED = 0
+  var STOP_WHEN_INSUFFICENT = 1
+
   var ecog: EgoCog
   var esoc: EgoSoc
   var body: Body
@@ -32,12 +35,19 @@ trait PlanBehaviour {
 
   var moveStucked = 0
 
+  var stopWhen: Int = STOP_WHEN_INSUFFICENT
+
   /*
    * Plan situation.
    */
   def insufficient = rc < rcPi
   def stucked = moveStucked > lambda
   def stagnated = wellfareStucked > lambda
+
+  def stopWenStucked { stopWhen = STOP_WHEN_STUCKED }
+  def stopWenInsufficient { stopWhen = STOP_WHEN_INSUFFICENT }
+  def isStopWhenInsufficient = stopWhen == STOP_WHEN_INSUFFICENT
+  def isStopWhenStucked = !isStopWhenInsufficient
 
   def act(sense: WorldSense) {
     throw new UnsupportedOperationException()
@@ -66,6 +76,7 @@ trait PlanBehaviour {
      */
     val nrcPi = ecog.mapit(sense, plan)
     if (nrcPi != rcPi) rcPi = nrcPi
+    if (this.esoc.u == 1) return true
     val coligated = esoc.act(sense, plan)
 
     val currentWellfare = body.soc.wellfare
@@ -75,13 +86,19 @@ trait PlanBehaviour {
     } else {
       wellfareStucked += 1
     }
-    
+
     return coligated
+  }
+
+  def onReplan(plan: Plan) {
+      moveStucked = 0
+      wellfareStucked = 0    
   }
 
 }
 
 trait PlanOnceActAllBehaviour extends PlanBehaviour {
+
   override def act(sense: WorldSense) {
     if (plan.finished) plan = NullPlan()
     /*
@@ -89,11 +106,15 @@ trait PlanOnceActAllBehaviour extends PlanBehaviour {
      * only if needed.
      */
     plan match {
-      case NullPlan() => plan = ecog.think(sense)
+      case NullPlan() => {
+        plan = ecog.think(sense)
+        onReplan(plan)
+      }
       case p: SingletonPlan => true
-      case _ =>
+      case _ => {
         val nplan = ecog.think(sense)
-        merge(nplan, plan)
+        onReplan(merge(nplan, plan))
+      }
     }
 
     /* 
@@ -113,23 +134,49 @@ trait PlanOnceActAllBehaviour extends PlanBehaviour {
   def merge(plan1: Plan, plan2: Plan): Plan = {
     return plan1
   }
+
+
 }
 
-trait PlanCompleteActAllBehaviour extends PlanOnceActAllBehaviour {
-  var STOP_WHEN_STUCKED = 0
-  var STOP_WHEN_INSUFFICENT = 1
+trait PlanCompleteActAllBehaviour extends PlanBehaviour {
 
-  var stopWhen: Int = STOP_WHEN_INSUFFICENT
+  override def act(sense: WorldSense) {
+    if (plan.finished) plan = NullPlan()
+    /*
+     * An agent should generate a new plan
+     * only if needed.
+     */
+    plan match {
+      case NullPlan() => {
+        plan = ecog.think(sense)
+        onReplan(plan)
+      }
+      case p: SingletonPlan => true
+      case _ => {
+        plan = ecog.think(sense)
+        onReplan(plan)
+      }
+    }
 
-  def stopWenStucked { stopWhen = STOP_WHEN_STUCKED }
-  def stopWenInsufficient { stopWhen = STOP_WHEN_INSUFFICENT }
-  def isStopWhenInsufficient = stopWhen == STOP_WHEN_INSUFFICENT
-  def isStopWhenStucked = !isStopWhenInsufficient
+    /* 
+     * The think process can generate a NullPlan
+     * if the target has already been reached.
+     */
+    if (plan.isNull) return
+    if (doActPhy(sense)) plan.next
+    if (doActSoc(sense)) plan.next
 
+    /*
+     * Decide the physical action based
+     * on the executed social action.
+     */
+  }
+  
   override protected def doActPhy(sense: WorldSense): Boolean = {
     if (isStopWhenInsufficient && sense.ag.u == 1) return super.doActPhy(sense)
-    else if (isStopWhenStucked) return super.doActPhy(sense)
-    else return false
+//    else if (isStopWhenStucked) return super.doActPhy(sense)
+//    else return false
+    else return super.doActPhy(sense)
   }
 
   override protected def doActSoc(sense: WorldSense): Boolean = {
@@ -147,6 +194,30 @@ trait PlanCompleteActAllBehaviour extends PlanOnceActAllBehaviour {
 
 }
 
+trait PlanCompleteActReplanBehaviour extends PlanCompleteActAllBehaviour {
+  override def act(sense: WorldSense) {
+    if (plan.finished) plan = NullPlan()
+
+    /*
+     * Replan
+     */
+    if (stucked) {
+      ecog.punish(plan)
+      plan = ecog.think(sense)
+      
+      if (!plan.isNull && !plan.action.isSoc) plan.add(ActSoc())
+      
+      onReplan(plan)
+    } else if (stagnated) {
+      moveStucked = 0
+      wellfareStucked = 0
+    }
+
+    super.act(sense)
+  }
+
+}
+
 trait PlanWhenNeededActBehaviour extends PlanCompleteActAllBehaviour {
   override def act(sense: WorldSense) {
     if (plan.finished) plan = NullPlan()
@@ -158,8 +229,7 @@ trait PlanWhenNeededActBehaviour extends PlanCompleteActAllBehaviour {
       case NullPlan() => plan = ecog.think(sense)
       case p: SingletonPlan => true
       case _ =>
-        val nplan = ecog.think(sense)
-        merge(nplan, plan)
+        plan = ecog.think(sense)
     }
 
     /* 

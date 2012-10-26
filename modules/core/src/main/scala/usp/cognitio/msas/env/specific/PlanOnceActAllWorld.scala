@@ -11,6 +11,7 @@ import usp.cognitio.msas.env.WorldSense
 import usp.cognitio.msas.env.SessionSoc
 import usp.cognitio.msas.env.spy.PlanSpy
 import org.apache.log4j.Logger
+import usp.cognitio.msas.agent.cog.Plan
 
 /**
  * World with agents that plan once and act.
@@ -39,7 +40,7 @@ class PlanOnceActAllWorld(val N: Int, private val _r: Int) extends GridWorld(_r)
    */
   var socialSem: Boolean = false
   var phySem: Boolean = false
-  
+
   /*
    * Initialize cell resources.
    */
@@ -82,29 +83,39 @@ class PlanOnceActAllWorld(val N: Int, private val _r: Int) extends GridWorld(_r)
   }
 
   def populate() {
-    def situation(ag: MsasAg) = 
+    def situation(ag: MsasAg) =
       "[" + ag + "] SITUATION: " +
-      "{insufficient: " + ag.insufficient + ", " +
-      "stucked: " + ag.stucked + ", " +
-      "stagnated: " + ag.stagnated + "}"
+        "{insufficient: " + ag.insufficient + ", " +
+        "stucked: " + ag.stucked + ", " +
+        "stagnated: " + ag.stagnated + "}"
+    def socializing(ag: MsasAg) = "[" + ag + "] Socializing"
+    def replanning(ag: MsasAg) = "[" + ag + "] Replanning"
+
     for (i <- 1 to N) {
       /*
        * BEHAVIOUR
        * ---------
        */
-      case class PlanAg(world: PlanOnceActAllWorld, _i: Int, _rc: Rc) extends MsasAg(_i,_rc)
-      val ag = new PlanAg(this, i, Rc()) with PlanCompleteActAllBehaviour {
+      case class PlanAg(world: PlanOnceActAllWorld, _i: Int, _rc: Rc) extends MsasAg(_i, _rc)
+      val ag = new PlanAg(this, i, Rc()) with PlanCompleteActReplanBehaviour {
         override def act(sense: WorldSense) {
           if (plan.isNull) return super.act(sense)
-          
-          if (world.phySem && plan.action.isPhy) return
-          else if (world.socialSem && plan.action.isSoc) return
-          else {
+
+          if (world.phySem && plan.action.isPhy) {
+            return
+          } else if (world.socialSem && plan.action.isSoc) {
+            logger.debug(socializing(this))
+            return
+          } else {
             logger.debug(situation(this))
             return super.act(sense)
           }
         }
+        override def onReplan(plan: Plan) {
+        	logger.debug(replanning(this))
+        }
       }
+
       ag.stopWenStucked
 
       ag.init(this, this)
