@@ -18,7 +18,9 @@ import org.junit.runners.Suite.SuiteClasses;
   usp.cognitio.msas.agent.cog.AStarTest.class, 
   usp.cognitio.msas.agent.EgoSocTest.class,
   usp.cognitio.msas.agent.EgoCogTest.class,
-  usp.cognitio.msas.env.RandomGridWorldTest.class
+  usp.cognitio.msas.env.RandomGridWorldTest.class,
+  usp.cognitio.msas.env.specific.PairPlanOnceActAllWorldTest.class,
+  usp.cognitio.msas.env.specific.StuckedWithPlanCompleteActAllTest.class
 })
 public class AllMsasTests {
 

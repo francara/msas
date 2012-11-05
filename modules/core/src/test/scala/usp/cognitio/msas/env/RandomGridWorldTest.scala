@@ -45,7 +45,7 @@ class RandomGridWorldTest extends Logging {
       }
     }
 
-    val ag1: MsasAg = new MsasAg(1, Rc(1, 0, 0)) with PlanOnceActAllBehaviour {
+    val ag1: MsasAg = new MsasAg(1, Rc(3, 0, 0)) with PlanOnceActAllBehaviour {
       rcPi = Rc(0, 0, 0)
     }
     val ag2: MsasAg = new MsasAg(2, Rc(0, 1, 0)) with PlanOnceActAllBehaviour {
@@ -60,26 +60,28 @@ class RandomGridWorldTest extends Logging {
 
     assertEquals(ag1.coalition.members, List(ag1))
     assertEquals(ag2.coalition.members, List(ag2))
-    world.act()
-    assertEquals(ag1.coalition.members, List(ag1,ag2))
     assertEquals(Point(0,0), world.position(ag1))
     assertEquals(Point(4,4), world.position(ag2))
     world.act()
-    assertEquals(Point(0,1), world.position(ag1))
+    assertEquals(ag1.coalition.members, List(ag1,ag2))
+    assertEquals(Point(0,0), world.position(ag1))
     assertEquals(Point(4,3), world.position(ag2))
     world.act()
-    assertEquals(Point(1,1), world.position(ag1))
+    assertEquals(Point(0,1), world.position(ag1))
     assertEquals(Point(4,2), world.position(ag2))
     world.act()
-    assertEquals(Point(2,1), world.position(ag1))
+    assertEquals(Point(1,1), world.position(ag1))
     assertEquals(Point(3,2), world.position(ag2))
+    world.act()
+    assertEquals(Point(2,1), world.position(ag1))
+    assertEquals(Point(3,1), world.position(ag2))
     assertFalse(ag1.satisfied)
     assertFalse(ag2.satisfied)
     world.act()
     assertEquals(Point(2,2), world.position(ag1))
-    assertEquals(Point(3,1), world.position(ag2))
+    assertEquals(Point(2,1), world.position(ag2))
     assertTrue(ag1.satisfied)
-    assertFalse(ag2.satisfied)
+    assertTrue(ag2.satisfied)
     world.act()
     assertEquals(Point(2,2), world.position(ag1))
     assertEquals(Point(2,1), world.position(ag2))

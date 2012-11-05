@@ -7,12 +7,12 @@ import usp.cognitio.math.alg.Point
 import org.junit.Test
 import org.junit.Assert._
 import usp.cognitio.msas.agent.Ag
+import usp.cognitio.msas.env.WorldSense
+import usp.cognitio.msas.agent.cog.Plan
 
 class PairPlanOnceActAllWorldTest extends Logging {
 
-  @Test
-  def manual() {
-    val world = new PlanOnceActAllWorld(2, 5) {
+  case class World extends PlanOnceActAllWorld(2,5) {
       override def randRcCell(x: Int, y: Int): Rc = {
         if (x == 1) Rc(0, 1, 0)
         else if (x == 3) Rc(1, 0, 0)
@@ -24,19 +24,47 @@ class PairPlanOnceActAllWorldTest extends Logging {
         else (Point(0, 0), Point(R / 2, R / 2))
       }
       override def randRcAg(ag: Ag): Rc = {
-        if (ag.id == 1) return Rc(1,0,0)
-        else Rc(0,1,0)
+        if (ag.id == 1) return Rc(1, 0, 0)
+        else Rc(0, 1, 0)
       }
       override def enter(ag: MsasAg): GridWorld = {
         val cell = super.enter(ag)
         ag.rc = randRcAg(ag)
         cell
       }
-    }
+      override def populate() {
+
+        for (i <- 1 to N) {
+          /*
+           * BEHAVIOUR
+           * ---------
+           */
+          case class PlanAg(world: PlanOnceActAllWorld, _i: Int, _rc: Rc) extends MsasAg(_i, _rc)
+          val ag = new PlanAg(this, i, Rc()) with PlanOnceActAllBehaviour {
+            override def act(sense: WorldSense) {
+                return super.act(sense)
+            }
+            override def onReplan(plan: Plan) {
+            }
+          }
+
+          ag.stopWenStucked
+
+          ag.init(this, this)
+          enter(ag)
+        }
+      }
+  } // World
+  
+  @Test
+  def manual() {
+    val world = World()
 
     world.populate()
     val ag1 = world.ag(1)
     val ag2 = world.ag(2)
+
+    Point.DIAGONAL = false
 
     assertEquals(ag1.coalition.members, List(ag1))
     assertEquals(ag2.coalition.members, List(ag2))
@@ -72,27 +100,7 @@ class PairPlanOnceActAllWorldTest extends Logging {
 
   @Test
   def run() {
-    val world = new PlanOnceActAllWorld(2, 5) {
-      override def randRcCell(x: Int, y: Int): Rc = {
-        if (x == 1) Rc(0, 1, 0)
-        else if (x == 3) Rc(1, 0, 0)
-        else Rc.nil
-      }
-      override def randPosition(ag: MsasAg): (Point, Point) = {
-        if (ag.id == 1) (Point(0, 0), Point(2, 2))
-        else if (ag.id == 2) (Point(4, 4), Point(2, 1))
-        else (Point(0, 0), Point(R / 2, R / 2))
-      }
-      override def randRcAg(ag: Ag): Rc = {
-        if (ag.id == 1) return Rc(1,0,0)
-        else Rc(0,1,0)
-      }
-      override def enter(ag: MsasAg): GridWorld = {
-        val cell = super.enter(ag)
-        ag.rc = randRcAg(ag)
-        cell
-      }
-    }
+    val world = World()
 
     world.populate()
     val ag1 = world.ag(1)
@@ -101,37 +109,21 @@ class PairPlanOnceActAllWorldTest extends Logging {
     assertEquals(ag1.coalition.members, List(ag1))
     assertEquals(ag2.coalition.members, List(ag2))
     while (!ag1.satisfied || !ag2.satisfied) {
-    	world.act()
+      world.act()
     }
     assertEquals(Point(2, 2), world.position(ag1))
     assertEquals(Point(2, 1), world.position(ag2))
     assertTrue(ag1.satisfied)
     assertTrue(ag2.satisfied)
   }
-  
+
   /**
    * Pure PlanOnceActAll.
    */
-  @Test
+    @Test
   def pure() {
-    val world = new PlanOnceActAllWorld(2, 5) {
-      override def randRcCell(x: Int, y: Int): Rc = {
-        if (x == 1) Rc(0, 1, 0)
-        else if (x == 3) Rc(1, 0, 0)
-        else Rc.nil
-      }
-      override def randPosition(ag: MsasAg): (Point, Point) = {
-        if (ag.id == 1) (Point(0, 0), Point(2, 2))
-        else if (ag.id == 2) (Point(4, 4), Point(2, 1))
-        else (Point(0, 0), Point(R / 2, R / 2))
-      }
-      override def enter(ag: MsasAg): GridWorld = {
-        val cell = super.enter(ag)
-        ag.rc = randRcAg(ag)
-        cell
-      }
-    }
-    
+    val world = World()
+
     world.populate()
     val ag1 = world.ag(1)
     val ag2 = world.ag(2)
@@ -139,13 +131,12 @@ class PairPlanOnceActAllWorldTest extends Logging {
     assertEquals(ag1.coalition.members, List(ag1))
     assertEquals(ag2.coalition.members, List(ag2))
     while (!ag1.satisfied || !ag2.satisfied) {
-    	world.act()
+      world.act()
     }
     assertEquals(Point(2, 2), world.position(ag1))
     assertEquals(Point(2, 1), world.position(ag2))
     assertTrue(ag1.satisfied)
-    assertTrue(ag2.satisfied)    
+    assertTrue(ag2.satisfied)
   }
-  
-  
+
 }

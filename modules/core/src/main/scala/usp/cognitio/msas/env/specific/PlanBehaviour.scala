@@ -123,7 +123,10 @@ trait PlanOnceActAllBehaviour extends PlanBehaviour {
      */
     if (plan.isNull) return
     if (doActPhy(sense)) plan.next
-    if (doActSoc(sense)) plan.next
+    if (plan.action.isSoc) {
+      doActSoc(sense)
+      plan.next      
+    }
 
     /*
      * Decide the physical action based
@@ -138,6 +141,9 @@ trait PlanOnceActAllBehaviour extends PlanBehaviour {
 
 }
 
+/**
+ * PlanCompleteActAll
+ */
 trait PlanCompleteActAllBehaviour extends PlanBehaviour {
 
   override def act(sense: WorldSense) {
@@ -165,6 +171,7 @@ trait PlanCompleteActAllBehaviour extends PlanBehaviour {
     if (plan.isNull) return
     if (doActPhy(sense)) plan.next
     if (doActSoc(sense)) plan.next
+    else if (plan.action.isSoc && isStopWhenStucked && stagnated) plan.next
 
     /*
      * Decide the physical action based
@@ -194,6 +201,9 @@ trait PlanCompleteActAllBehaviour extends PlanBehaviour {
 
 }
 
+/**
+ * PlanCompleteActReplan
+ */
 trait PlanCompleteActReplanBehaviour extends PlanCompleteActAllBehaviour {
   override def act(sense: WorldSense) {
     if (plan.finished) plan = NullPlan()
