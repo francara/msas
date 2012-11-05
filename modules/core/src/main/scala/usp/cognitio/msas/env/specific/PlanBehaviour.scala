@@ -10,6 +10,7 @@ import usp.cognitio.msas.env.WorldSense
 import usp.cognitio.msas.agent.cog.SingletonPlan
 import usp.cognitio.msas.agent.ActPhy
 import usp.cognitio.msas.agent.ActSoc
+import usp.cognitio.msas.agent.Ag
 
 trait PlanBehaviour {
   var STOP_WHEN_STUCKED = 0
@@ -41,8 +42,10 @@ trait PlanBehaviour {
    * Plan situation.
    */
   def insufficient = rc < rcPi
-  def stucked = moveStucked > lambda
-  def stagnated = wellfareStucked > lambda
+  def stucked = !satisfied && moveStucked > lambda
+  def stagnated = !satisfied && wellfareStucked > lambda
+
+  def satisfied : Boolean = ecog.satisfied
 
   def stopWenStucked { stopWhen = STOP_WHEN_STUCKED }
   def stopWenInsufficient { stopWhen = STOP_WHEN_INSUFFICENT }
@@ -91,8 +94,8 @@ trait PlanBehaviour {
   }
 
   def onReplan(plan: Plan) {
-      moveStucked = 0
-      wellfareStucked = 0    
+    moveStucked = 0
+    wellfareStucked = 0
   }
 
 }
@@ -125,7 +128,7 @@ trait PlanOnceActAllBehaviour extends PlanBehaviour {
     if (doActPhy(sense)) plan.next
     if (plan.action.isSoc) {
       doActSoc(sense)
-      plan.next      
+      plan.next
     }
 
     /*
@@ -137,7 +140,6 @@ trait PlanOnceActAllBehaviour extends PlanBehaviour {
   def merge(plan1: Plan, plan2: Plan): Plan = {
     return plan1
   }
-
 
 }
 
@@ -178,11 +180,11 @@ trait PlanCompleteActAllBehaviour extends PlanBehaviour {
      * on the executed social action.
      */
   }
-  
+
   override protected def doActPhy(sense: WorldSense): Boolean = {
     if (isStopWhenInsufficient && sense.ag.u == 1) return super.doActPhy(sense)
-//    else if (isStopWhenStucked) return super.doActPhy(sense)
-//    else return false
+    //    else if (isStopWhenStucked) return super.doActPhy(sense)
+    //    else return false
     else return super.doActPhy(sense)
   }
 
@@ -205,18 +207,24 @@ trait PlanCompleteActAllBehaviour extends PlanBehaviour {
  * PlanCompleteActReplan
  */
 trait PlanCompleteActReplanBehaviour extends PlanCompleteActAllBehaviour {
+  var justReplan = false
+  override def onReplan(plan: Plan) {
+    justReplan = true
+  }
+
   override def act(sense: WorldSense) {
     if (plan.finished) plan = NullPlan()
 
+    if (justReplan) justReplan = false
     /*
      * Replan
      */
     if (stucked) {
       ecog.punish(plan)
       plan = ecog.think(sense)
-      
+
       if (!plan.isNull && !plan.action.isSoc) plan.add(ActSoc())
-      
+
       onReplan(plan)
     } else if (stagnated) {
       moveStucked = 0

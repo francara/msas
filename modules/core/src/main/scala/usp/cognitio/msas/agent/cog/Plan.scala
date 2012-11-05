@@ -21,7 +21,7 @@ case class Plan(var acts: List[Act]) {
   def action : Act = acts(index)
   def isNull = false
   
-  def finished : Boolean = index >= acts.size
+  def finished : Boolean = index >= acts.size - 1
   
   def remaining : Plan = Plan(acts.drop(index))
   

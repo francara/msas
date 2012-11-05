@@ -112,7 +112,8 @@ class PlanOnceActAllWorld(val N: Int, private val _r: Int) extends GridWorld(_r)
           }
         }
         override def onReplan(plan: Plan) {
-        	logger.debug(replanning(this))
+          super.onReplan(plan)
+          logger.debug(replanning(this))
         }
       }
 

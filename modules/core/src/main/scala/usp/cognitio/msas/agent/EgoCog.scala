@@ -18,6 +18,8 @@ case class EgoCog(_ag:MsasAg) extends Ego(_ag) with PlanProspector with PlanMapp
   def rcPi = ag.rcPi
   def target : Point = ag.target
   
+  def satisfied : Boolean = _ag.body.phy.position(_ag) == target
+
   def think(sense:WorldSense) : Plan = {
     /*
      * Build plans according the state space.

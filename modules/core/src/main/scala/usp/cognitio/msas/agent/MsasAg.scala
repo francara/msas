@@ -34,10 +34,6 @@ class MsasAg(_id: Long, _rc: Rc) extends Ag(_id, _rc)
     target = Point(body.phy.R/2, body.phy.R/2)
   }
 
-  def satisfied : Boolean = {
-    return body.phy.position(this) == target
-  }
-
   def coalition: Coalition = esoc.coalition
   def consume(rcCoal: Rc, q: Int): Rc = esoc.consume(rcCoal, q)
   
