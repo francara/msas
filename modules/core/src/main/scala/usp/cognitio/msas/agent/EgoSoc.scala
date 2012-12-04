@@ -33,6 +33,7 @@ case class EgoSoc(_ag: MsasAg) extends Ego(_ag) with Roundable {
       .foreach(neigh => {
         val session = ag.body.soc.communicate(ag, neigh)
         val alloc = session.allocate()
+        ag.qtdAval += 1
         if (u(alloc) > u && session.avaliate()) {
           candidates = Candidate(neigh, u(alloc), session) :: candidates
         }
@@ -46,6 +47,7 @@ case class EgoSoc(_ag: MsasAg) extends Ego(_ag) with Roundable {
     /*
      * Associate with the best coalition.
      */
+    ag.qtdColigate += 1
     val candidate = candidates.sort(_.u > _.u).head
     if (candidate.session.coligate()) {
       this.coalition = candidate.session.coalition

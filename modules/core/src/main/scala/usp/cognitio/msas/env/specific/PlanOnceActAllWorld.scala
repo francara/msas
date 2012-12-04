@@ -49,8 +49,10 @@ class PlanOnceActAllWorld(val N: Int, private val _r: Int) extends GridWorld(_r)
   override def randRcCell(x: Int, y: Int): Rc = {
     if (randCell == null) randCell = new RandomDataImpl()
     if (randsCell == null) randsCell = Array.tabulate(Rc.DIM)(k => new RandomDataImpl())
-    val k = randCell.nextInt(0, Rc.DIM - 1)
-    Rc((0 until Rc.DIM).toList.map(v => if (v == k) randsCell(k).nextGaussian(kmean, ksigma).asInstanceOf[Int] else 0))
+//    val k = randCell.nextInt(0, Rc.DIM - 1)
+//    Rc((0 until Rc.DIM).toList.map(v => if (v == k) randsCell(k).nextGaussian(kmean, ksigma).asInstanceOf[Int] else 0))
+    val els = (0 to Rc.DIM-1).map(k => randsCell(k).nextGaussian(kmean, ksigma).asInstanceOf[Int]).toList 
+    Rc(els)
   }
   override def randPosition(ag: MsasAg): (Point, Point) = (Point(randPos.nextInt(0, R - 1), randPos.nextInt(0, R - 1)), Point(R / 2, R / 2))
 
@@ -97,7 +99,7 @@ class PlanOnceActAllWorld(val N: Int, private val _r: Int) extends GridWorld(_r)
        * ---------
        */
       case class PlanAg(world: PlanOnceActAllWorld, _i: Int, _rc: Rc) extends MsasAg(_i, _rc)
-      val ag = new PlanAg(this, i, Rc()) with PlanCompleteActReplanBehaviour {
+      val ag = new PlanAg(this, i, Rc()) with PlanOnceActAllBehaviour {
         override def act(sense: WorldSense) {
           if (plan.isNull) return super.act(sense)
 

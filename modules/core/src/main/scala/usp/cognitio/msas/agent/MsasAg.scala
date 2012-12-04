@@ -23,6 +23,10 @@ class MsasAg(_id: Long, _rc: Rc) extends Ag(_id, _rc)
   
   var target: Point = null
   
+  var qtdAval = 0
+  var qtdColigate = 0
+  var qtdReplan = 0
+
   def u : Double = esoc.u
   def u(al: Rc): Double = esoc.u(al)
 

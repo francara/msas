@@ -48,6 +48,9 @@ case class AStarPlanner(val edge: ((Point,Point) => Double), source:Point, targe
   var queue = new java.util.PriorityQueue[OpenNodeStar]()
   
   def * : Path = {
+    if (source.x == 0 && source.y == 0) {
+      val bla = 0
+    }
     OpenNodeStar(source).g(0).h(source.dist(target)).f(source.dist(target))
       .cast.enqueue
     while (!opened.isEmpty) {

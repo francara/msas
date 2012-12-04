@@ -26,7 +26,7 @@ trait PlanBehaviour {
   var rcPi: Rc
 
   var target: Point
-
+  
   /**
    * Number of iterations without wellfare evolution.
    */
@@ -96,6 +96,8 @@ trait PlanBehaviour {
   def onReplan(plan: Plan) {
     moveStucked = 0
     wellfareStucked = 0
+    
+    body.ag.qtdReplan += 1
   }
 
 }
@@ -111,7 +113,6 @@ trait PlanOnceActAllBehaviour extends PlanBehaviour {
     plan match {
       case NullPlan() => {
         plan = ecog.think(sense)
-        onReplan(plan)
       }
       case p: SingletonPlan => true
       case _ => {
@@ -210,6 +211,7 @@ trait PlanCompleteActReplanBehaviour extends PlanCompleteActAllBehaviour {
   var justReplan = false
   override def onReplan(plan: Plan) {
     justReplan = true
+    body.ag.qtdReplan += 1    
   }
 
   override def act(sense: WorldSense) {
