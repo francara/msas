@@ -7,7 +7,7 @@ import usp.cognitio.msas.agent.MsasAg
 import usp.cognitio.msas.agent.cog.plan.Space
 
 case class WorldSense (
-    val N:Int, val ag: MsasAg, val position:Point,
+    val it:Int, val N:Int, val ag: MsasAg, val position:Point,
     private val wphy: WorldPhy,
     private val wsoc: WorldSoc) {
   

@@ -1,16 +1,15 @@
 package usp.cognitio.msas.agent
 import usp.cognitio.math.Roundable
 import usp.cognitio.msas.agent.cog.Plan
-import usp.cognitio.msas.agent.ActPhy
 import usp.cognitio.msas.agent.Ag
 import usp.cognitio.msas.agent.MsasAg
+import usp.cognitio.msas.agent.MindTraceable
 import usp.cognitio.msas.coal.Coalition
-import usp.cognitio.msas.coal.KLinearSampleCoalitionGame
 import usp.cognitio.msas.env.SessionSoc
 import usp.cognitio.msas.env.WorldSense
 import usp.cognitio.msas.Rc
 
-case class EgoSoc(_ag: MsasAg) extends Ego(_ag) with Roundable {
+case class EgoSoc(_ag: MsasAg) extends Ego(_ag) with Roundable with MindTraceable {
   case class Candidate(val neigh: Ag, val u: Double, val session: SessionSoc)
   var coalition: Coalition = ag.body.soc.createCoalition(ag)
   
@@ -21,6 +20,8 @@ case class EgoSoc(_ag: MsasAg) extends Ego(_ag) with Roundable {
   def u(al: Rc): Double = if (rcPi.sum > 0) round(consume(al, rcPi.sum).sum.asInstanceOf[Double] / rcPi.sum) else 1.0
 
   def act(sense: WorldSense, plan: Plan): Boolean = {
+    debug(sense, "Soc", "U:" + u)
+    def pre(ag: Ag) : String = "[NEIGH:" + ag.toString() + "]"
     val action = plan.action
     if (action.isPhy) return false
 
@@ -33,8 +34,9 @@ case class EgoSoc(_ag: MsasAg) extends Ego(_ag) with Roundable {
       .foreach(neigh => {
         val session = ag.body.soc.communicate(ag, neigh)
         val alloc = session.allocate()
+        trace(sense, "Avaliate", pre(neigh) + " U:" + u(alloc) + " DoubleWin:" + session.doubleWin())
         ag.qtdAval += 1
-        if (u(alloc) > u && session.avaliate()) {
+        if (u(alloc) > u && session.doubleWin()) {
           candidates = Candidate(neigh, u(alloc), session) :: candidates
         }
       })
@@ -49,6 +51,7 @@ case class EgoSoc(_ag: MsasAg) extends Ego(_ag) with Roundable {
      */
     ag.qtdColigate += 1
     val candidate = candidates.sort(_.u > _.u).head
+    debug(sense, "Coligate", pre(candidate.neigh))
     if (candidate.session.coligate()) {
       this.coalition = candidate.session.coalition
       return true

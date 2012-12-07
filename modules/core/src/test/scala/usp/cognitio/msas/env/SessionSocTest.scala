@@ -32,11 +32,11 @@ class SessionSocTest extends Logging {
     val rc1_from2 = session1.allocate()
     assertEquals(Rc(0, 1, 0), rc1_from2)
     assertEquals(Rc(1, 0, 0), session1.alocs(ag2))
-    assertTrue(session1.avaliate())
+    assertTrue(session1.doubleWin())
 
     val session2 = SessionSoc(world, agDummy, ag1, new VoteCoalition(ag1))
     session2.allocate()
-    assertFalse(session2.avaliate())
+    assertFalse(session2.doubleWin())
   }
 
 }

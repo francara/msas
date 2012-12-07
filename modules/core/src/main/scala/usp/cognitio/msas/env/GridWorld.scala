@@ -10,6 +10,7 @@ import usp.cognitio.msas.Rc
 import usp.cognitio.math.alg.Point
 import usp.cognitio.msas.agent.MsasAg
 import scala.collection.mutable.ArrayBuffer
+import usp.cognitio.msas.coal.Coalition
 
 /**
  * Represents the environment in a matrix N x N.
@@ -21,10 +22,21 @@ class GridWorld(val R : Int) extends WorldSoc with WorldPhy {
   val where : Map[Ag,GridCell] = scala.collection.mutable.Map[Ag,GridCell]()
   
   val rcs: Array[Array[Rc]] = Array.tabulate(R,R)((x, y) => randRcCell(x,y))
+
+  def clear() {
+    cells.foreach(row => {
+      row.foreach(cell => cell.clear())
+    })
+    _ags = new ArrayBuffer[MsasAg]()
+    where.clear()
+    for (i <- 0 to R-1) for (j <- 0 to R-1) rcs(i)(j) = randRcCell(i,j)
+    coals = coals.empty
+  }
   
   def ag(i: Int) = ags.find(_.id == i).head
   def ags = _ags.toArray
-  def sense(ag: MsasAg): WorldSense = WorldSense(R, ag, where(ag).point, this, this)
+  var currentIteration : Int = 0
+  def sense(ag: MsasAg): WorldSense = WorldSense(currentIteration, R, ag, where(ag).point, this, this)
   
   /**
    * Randomize cell resources.
@@ -77,7 +89,7 @@ class GridWorld(val R : Int) extends WorldSoc with WorldPhy {
     val result = if (curcell != ncell) true else false
     
     // Consume ag resource
-    if (result) ag.rc = ag.rc - crc
+    if (result) ag.consume(crc)
     
     return result
   }  

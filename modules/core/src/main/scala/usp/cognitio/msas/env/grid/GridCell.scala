@@ -24,6 +24,10 @@ class GridCell(val x : Int, val y : Int, grid : GridWorld) {
 
   def rc : Rc = grid.rcs(x)(y)
   
+  def clear() {
+    ags = List()
+  }
+  
   def in(ag : Ag) : GridCell = { ags = ag :: ags; this }
   def out(ag : Ag) : GridCell = { ags = ags.remove(_ == ag); this }
   def who : List[Ag] = ags

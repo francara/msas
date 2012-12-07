@@ -9,6 +9,7 @@ import usp.cognitio.msas.env.Direction.North
 import usp.cognitio.msas.env.Direction.South
 import usp.cognitio.msas.Rc
 import usp.cognitio.msas.agent.MsasAg
+import scala.util.Random
 
 class GridWorldTest extends Logging {
   @Test
@@ -27,14 +28,14 @@ class GridWorldTest extends Logging {
      * Insert agent into world.
      */
     val ag1: MsasAg = new MsasAg(1, Rc.nil)
-    ag1.init(world,world)
+    ag1.init(world, world)
     world.enter(ag1, 1, 1)
 
     debug("Cell 1,1: Entered agent 1: " + world(1, 1))
     assertEquals(world(1, 1).ags, List(ag1))
 
     val ag2: MsasAg = new MsasAg(2, Rc.nil)
-    ag2.init(world,world)
+    ag2.init(world, world)
     world.enter(ag2, 1, 1)
 
     debug("Cell 1,1: Entered agent 2: " + world(1, 1))
@@ -51,8 +52,8 @@ class GridWorldTest extends Logging {
     world.putRc(1, 1, new Rc(3 :: 0 :: 0 :: Nil))
     world.putRc(2, 1, new Rc(0 :: 1 :: 0 :: Nil))
     val (ag1, ag2) = (new MsasAg(1, Rc.nil), new MsasAg(2, Rc.nil))
-    ag1.init(world,world)
-    ag2.init(world,world)
+    ag1.init(world, world)
+    ag2.init(world, world)
     world.enter(ag1, 1, 1).enter(ag2, 1, 1)
 
     assertTrue(world(1, 1).contains(ag1))
@@ -73,7 +74,6 @@ class GridWorldTest extends Logging {
 
     // Path
     assertEquals(world.toRc((1, 1) :: (2, 1) :: Nil), new Rc(3 :: 1 :: 0 :: Nil))
-
 
   }
 
@@ -110,6 +110,34 @@ class GridWorldTest extends Logging {
     assertIn(world, ag, (3, 3))
     world.moveTo(ag, East)
     assertIn(world, ag, (3, 3))
+  }
+
+  @Test
+  def testRepopulate() {
+    val world = new GridWorld(4) {
+      override def randRcCell(x: Int, y: Int): Rc = {
+        val random = new Random()
+        Rc(List( random.nextInt(), random.nextInt(), random.nextInt() ))
+      }
+    }
+    val ag = new MsasAg(1, Rc.nil)
+    ag.init(world, world)
+    world.enter(ag, 0, 0)
+
+    assertIn(world, ag, (0, 0))
+    world.moveTo(ag, North)
+    assertIn(world, ag, (0, 1))
+
+    val rc00 = world.rcs(0)(0)
+    val rc01 = world.rcs(0)(1)
+    val rc02 = world.rcs(0)(2)
+
+    world.clear()
+
+    assertTrue(world.rcs(0)(0) != rc00)
+    assertTrue(world.rcs(0)(1) != rc01)
+    assertTrue(world.rcs(0)(2) != rc02)
+    assertTrue(world.where.isEmpty)
   }
 
   private def assertIn(world: GridWorld, ag: Ag, cell: (Int, Int)): Unit = assertIn(world, List(ag), cell)

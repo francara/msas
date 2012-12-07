@@ -11,8 +11,12 @@ import usp.cognitio.msas.agent.cog.SingletonPlan
 import usp.cognitio.msas.agent.ActPhy
 import usp.cognitio.msas.agent.ActSoc
 import usp.cognitio.msas.agent.Ag
+import org.apache.log4j.Logger
+import usp.cognitio.msas.agent.MsasAg
+import usp.cognitio.msas.agent.Traceable
+import usp.cognitio.msas.agent.MindTraceable
 
-trait PlanBehaviour {
+trait PlanBehaviour extends MindTraceable {  
   var STOP_WHEN_STUCKED = 0
   var STOP_WHEN_INSUFFICENT = 1
 
@@ -103,9 +107,10 @@ trait PlanBehaviour {
 }
 
 trait PlanOnceActAllBehaviour extends PlanBehaviour {
-
+  
   override def act(sense: WorldSense) {
-    if (plan.finished) plan = NullPlan()
+    info(sense, "Act", plan.toString())
+//    if (plan.finished) plan = NullPlan()
     /*
      * An agent should generate a new plan
      * only if needed.
@@ -150,7 +155,9 @@ trait PlanOnceActAllBehaviour extends PlanBehaviour {
 trait PlanCompleteActAllBehaviour extends PlanBehaviour {
 
   override def act(sense: WorldSense) {
-    if (plan.finished) plan = NullPlan()
+    info(sense, "Act", plan.toString())    
+//    if (plan.finished) plan = NullPlan()
+    
     /*
      * An agent should generate a new plan
      * only if needed.
@@ -215,7 +222,8 @@ trait PlanCompleteActReplanBehaviour extends PlanCompleteActAllBehaviour {
   }
 
   override def act(sense: WorldSense) {
-    if (plan.finished) plan = NullPlan()
+    info(sense, "Act", plan.toString())    
+//    if (plan.finished) plan = NullPlan()
 
     if (justReplan) justReplan = false
     /*

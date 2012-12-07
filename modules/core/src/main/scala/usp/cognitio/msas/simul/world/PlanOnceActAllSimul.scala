@@ -28,31 +28,46 @@ object PlanOnceActAllSimul {
   }
 
   def main(args: Array[String]) {
-    var iteration = 0
-    world.populate()
-    while (!world.satisfied() && iteration < 100) {
-      world.act()
-      iteration += 1
+    var startWellfare = 0D
+    var simulNum = 1
+
+    for (simulNum <- 1 to 10) {
+      var iteration = 1
+      world.populate()
+      while (!world.satisfied() && iteration < 100) {
+        world.act()
+        if (iteration == 1) {
+          world.ags.foreach(_.tracePhy())
+          startWellfare = world.wellfare
+        }
+
+        iteration += 1
+      }
+      world.ags.foreach(_.tracePhy())
+
+      val cy = cycles()
+      val coalitions = world.coals.map(_._2).toSet.size
+      val endWellfare = world.wellfare
+
+      //    var simulcsv = new BufferedWriter(new FileWriter("/Users/frank/dev/research/msas/log/msas-simul.csv", true));
+      var simulcsv = new BufferedWriter(new FileWriter("C:\\work\\dev\\pessoal\\msas\\log\\msas-simul.csv", true));
+      simulcsv.write(
+        simulNum + ","
+          + cy._1 + ","
+          + cy._2 + ","
+          + cy._3 + ","
+          + coalitions + ","
+          + startWellfare + ","
+          + endWellfare
+          + "\n")
+      simulcsv.close()
     }
-
-    val simulNum = 1
-    val cy = cycles()
-
-    //    var simulcsv = new BufferedWriter(new FileWriter("/Users/frank/dev/research/msas/log/msas-simul.csv", true));
-    var simulcsv = new BufferedWriter(new FileWriter("C:\\work\\dev\\pessoal\\msas\\log\\msas-simul.csv", true));
-    simulcsv.write(
-      simulNum + ","
-        + cy._1 + ","
-        + cy._2 + ","
-        + cy._3
-        + "\n")
-    simulcsv.close()
   }
 
   /**
    * Qtd of cycles: (aval, coligate, replan)
    */
-  def cycles(): (Int, Int, Int) = {
+  def cycles(): (Int, Double, Double) = {
     var qaval = 0
     var qcolig = 0
     var qreplan = 0
@@ -62,7 +77,7 @@ object PlanOnceActAllSimul {
       qreplan += ag.qtdReplan
     })
 
-    (qaval / world.N, qcolig / world.N, qreplan / world.N)
+    (qaval / world.N, qcolig / world.N.asInstanceOf[Double], qreplan / world.N.asInstanceOf[Double])
   }
 
 }

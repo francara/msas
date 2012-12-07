@@ -26,9 +26,9 @@ trait PlanSpy extends GridWorld {
   }
 
   override def communicate(who: MsasAg, neigh: MsasAg): SessionSoc = new SessionSoc(this, who, neigh, coals(neigh)) {
-    override def avaliate(): Boolean = {
+    override def doubleWin(): Boolean = {
       logger.debug("Avaliating: " + who + " => " + neigh)
-      super.avaliate()
+      super.doubleWin()
     }
   }
 

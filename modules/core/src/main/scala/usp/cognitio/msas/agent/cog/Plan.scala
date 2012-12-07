@@ -29,6 +29,7 @@ case class Plan(var acts: List[Act]) {
     Path(acts.filter(_.isInstanceOf[ActPhy]).map(_.asInstanceOf[ActPhy].target))
   }
   
+  override def toString() : String = "index: " + index + ", " + path.toString()
 }
 
 case class NullPlan extends Plan(Nil) {

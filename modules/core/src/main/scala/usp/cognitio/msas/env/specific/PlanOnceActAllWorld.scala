@@ -78,6 +78,7 @@ class PlanOnceActAllWorld(val N: Int, private val _r: Int) extends GridWorld(_r)
   }
 
   def act() {
+    currentIteration += 1
     ags.foreach(ag => {
       val sense = this.sense(ag)
       if (!ag.satisfied) ag.act(sense)
@@ -93,6 +94,7 @@ class PlanOnceActAllWorld(val N: Int, private val _r: Int) extends GridWorld(_r)
     def socializing(ag: MsasAg) = "[" + ag + "] Socializing"
     def replanning(ag: MsasAg) = "[" + ag + "] Replanning"
 
+    this.clear()
     for (i <- 1 to N) {
       /*
        * BEHAVIOUR

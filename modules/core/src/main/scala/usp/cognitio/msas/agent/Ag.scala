@@ -7,8 +7,14 @@ import usp.cognitio.msas.Rc
 
 class Ag(val id: Long, var rc: Rc) extends MsasObject {
   def this(id: Long) = this(id, Rc())
-
+  val dotation = rc
+  
   var position: Point = Point(0, 0)
+  
+  def consume(cRc: Rc) : Rc = {
+	rc = rc - cRc    
+    return rc
+  }
   
   override def toString = id.toString
   override def equals(any: Any): Boolean =

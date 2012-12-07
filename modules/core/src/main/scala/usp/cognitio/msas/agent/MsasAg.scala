@@ -20,7 +20,7 @@ class MsasAg(_id: Long, _rc: Rc) extends Ag(_id, _rc)
   var plan: Plan = NullPlan()
 
   var rcPi: Rc = Rc()
-  
+
   var target: Point = null
   
   var qtdAval = 0
@@ -40,5 +40,12 @@ class MsasAg(_id: Long, _rc: Rc) extends Ag(_id, _rc)
 
   def coalition: Coalition = esoc.coalition
   def consume(rcCoal: Rc, q: Int): Rc = esoc.consume(rcCoal, q)
+ 
+  def ag : MsasAg = this
+
+  override def consume(cRc: Rc) : Rc = {
+    rcPi = rcPi - cRc
+    return super.consume(cRc)
+  }
   
 }

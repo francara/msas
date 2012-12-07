@@ -25,7 +25,7 @@ case class SessionSoc(val wsoc: WorldSoc, val who: MsasAg, val neigh: MsasAg, va
     return alocs(who)
   }
 
-  def avaliate(): Boolean = {
+  def doubleWin(): Boolean = {
     if (!allocated) doAllocation()
 
     var doubleWin = true
