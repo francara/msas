@@ -9,7 +9,7 @@ trait MindTraceable extends Traceable {
   
   def ag : MsasAg
   
-  def tracePhy() = logger.trace(pre(ag.rc.toString + "/" + ag.rcPi.toString))
+  def tracePhy() = logger.trace(pre(ag.rc.toString + "/" + ag.rcPi.toString) + "[Rc^-:" + ag.rcMinus + "]")
   
   def info(sense: WorldSense, action:String, msg:String) = logger.info(pre(sense, action, msg))
   def debug(sense: WorldSense, action:String, msg:String) = logger.debug(pre(sense, action, msg))

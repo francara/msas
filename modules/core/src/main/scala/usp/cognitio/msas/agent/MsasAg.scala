@@ -21,6 +21,8 @@ class MsasAg(_id: Long, _rc: Rc) extends Ag(_id, _rc)
 
   var rcPi: Rc = Rc()
 
+  def rcMinus : Rc = rc ^- rcPi
+
   var target: Point = null
   
   var qtdAval = 0

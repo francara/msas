@@ -51,7 +51,7 @@ case class EgoSoc(_ag: MsasAg) extends Ego(_ag) with Roundable with MindTraceabl
      */
     ag.qtdColigate += 1
     val candidate = candidates.sort(_.u > _.u).head
-    debug(sense, "Coligate", pre(candidate.neigh))
+    info(sense, "Coligate", pre(candidate.neigh))
     if (candidate.session.coligate()) {
       this.coalition = candidate.session.coalition
       return true

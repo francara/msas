@@ -37,6 +37,7 @@ trait PlanBehaviour extends MindTraceable {
   val lambda = 4
   var wellfareStucked = 0
   var wellfare = 0.0
+  var lack = 0
 
   var moveStucked = 0
 
@@ -87,8 +88,11 @@ trait PlanBehaviour extends MindTraceable {
     val coligated = esoc.act(sense, plan)
 
     val currentWellfare = body.soc.wellfare
-    if (wellfare != currentWellfare) {
+    val currentLack = body.soc.lack
+    if (lack != currentLack) {
+//    if (wellfare != currentWellfare) {
       wellfare = currentWellfare
+      lack = currentLack
       wellfareStucked = 0
     } else {
       wellfareStucked += 1
@@ -109,8 +113,8 @@ trait PlanBehaviour extends MindTraceable {
 trait PlanOnceActAllBehaviour extends PlanBehaviour {
   
   override def act(sense: WorldSense) {
-    info(sense, "Act", plan.toString())
-//    if (plan.finished) plan = NullPlan()
+    debug(sense, "Act", plan.toString())
+    
     /*
      * An agent should generate a new plan
      * only if needed.
@@ -156,7 +160,6 @@ trait PlanCompleteActAllBehaviour extends PlanBehaviour {
 
   override def act(sense: WorldSense) {
     info(sense, "Act", plan.toString())    
-//    if (plan.finished) plan = NullPlan()
     
     /*
      * An agent should generate a new plan
@@ -180,13 +183,9 @@ trait PlanCompleteActAllBehaviour extends PlanBehaviour {
      */
     if (plan.isNull) return
     if (doActPhy(sense)) plan.next
-    if (doActSoc(sense)) plan.next
+    if (doActSoc(sense) && !stagnated) plan.next
     else if (plan.action.isSoc && isStopWhenStucked && stagnated) plan.next
 
-    /*
-     * Decide the physical action based
-     * on the executed social action.
-     */
   }
 
   override protected def doActPhy(sense: WorldSense): Boolean = {

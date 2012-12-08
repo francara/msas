@@ -6,6 +6,7 @@ import usp.cognitio.msas.agent.Ag
 import java.io.BufferedWriter
 import java.io.FileWriter
 import usp.cognitio.msas.simul.compartilhamento.SimulConfiguration
+import usp.cognitio.msas.env.specific.Plan2OnceActAllWorld
 
 object PlanOnceActAllSimul {
 

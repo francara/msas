@@ -16,6 +16,7 @@ trait WorldSoc {
   /**
    * Avg agent´s wellfare.
    */
+  def lack : Int = ags.map(_.rcMinus.sum).sum
   def wellfare : Double = ags.map(_.u).sum/ags.size
   
   def createCoalition(ag: Ag) : Coalition = new KVoteCoalition(List(ag))
