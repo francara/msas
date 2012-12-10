@@ -221,8 +221,7 @@ trait PlanCompleteActReplanBehaviour extends PlanCompleteActAllBehaviour {
   }
 
   override def act(sense: WorldSense) {
-    info(sense, "Act", plan.toString())    
-//    if (plan.finished) plan = NullPlan()
+    info(sense, "Act", plan.toString())
 
     if (justReplan) justReplan = false
     /*

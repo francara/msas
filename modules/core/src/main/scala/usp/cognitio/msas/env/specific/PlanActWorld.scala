@@ -10,7 +10,7 @@ import org.apache.log4j.Logger
 import usp.cognitio.msas.env.WorldSense
 import usp.cognitio.msas.agent.cog.Plan
 
-class PlanActWorld(val N: Int, private val _r: Int) extends GridWorld(_r) {
+class PlanActWorld(val N: Int, private val _r: Int, var kmeanScale: Double = 0.1) extends GridWorld(_r) {
   val logger = Logger.getLogger(getClass().getName());
 
   Point.DIAGONAL = true
@@ -21,10 +21,11 @@ class PlanActWorld(val N: Int, private val _r: Int) extends GridWorld(_r) {
   var randCell = new RandomDataImpl()
   val randPos = new RandomDataImpl()
 
+  
   def mean: Double = R / 2
-  def sigma: Double = mean / 2
-  def kmean = 0.1 * mean
-  def ksigma = kmean / 2
+  def sigma: Double = mean / 4
+  def kmean = kmeanScale * mean
+  def ksigma = kmean / 4
 
   /*
    * Semaphores

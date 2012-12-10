@@ -60,15 +60,24 @@ class StuckedWithPlanCompleteActReplanTest {
     val ag2 = world.ag(2)
     Point.DIAGONAL = false
 
+    assertEquals(0, ag1.qtdReplan)
+    assertEquals(0, ag2.qtdReplan)
+    
     /*
      * Ag1: stucked at (1,1)
      * Ag2: Stucked at (4,1)
      */
     world.act() // Coligation
     world.act() // ag1 avaliating, ag2 move (4,3)
+    
+    assertEquals(1, ag1.qtdReplan)
+    assertEquals(1, ag2.qtdReplan)    
+    
     assertEquals(Point(0, 0), world.position(ag1))
     assertEquals(Point(4, 3), world.position(ag2))
     world.act() // ag1 avaliating, ag2 move (4,2)
+    assertEquals(1, ag1.qtdReplan)
+    assertEquals(1, ag2.qtdReplan)    
     assertEquals(Point(0, 0), world.position(ag1))
     assertEquals(Point(4, 2), world.position(ag2))
     world.act() // ag1 avaliating, ag2 move (4,1)

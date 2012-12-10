@@ -12,11 +12,20 @@ class PlanCompleteActAllWorld(val _N: Int, private val __r: Int) extends PlanAct
   override def create(id: Int): PlanAg = new PlanAg(this, id, Rc()) with PlanCompleteActAllBehaviour
 }
 
+class PlanCompleteActReplanWorld(val _N: Int, private val __r: Int) extends PlanActWorld(_N, __r) {
+  override def create(id: Int): PlanAg = new PlanAg(this, id, Rc()) with PlanCompleteActReplanBehaviour
+}
+
 object Worlds {
   val N = 15
   val R = 30
-  val worlds = new Plan2OnceActAllWorld(N, R) ::
-    new PlanCompleteActAllWorld(N, R) ::
+  var meanTarget = 10
+  var kmeanScale = 0.05
+  var kmeans = List(0.05, 0.075, 0.1, 0.125, 0.15)
+  val worlds = 
+//    new Plan2OnceActAllWorld(N, R) ::
+//    new PlanCompleteActAllWorld(N, R) ::
+    new PlanCompleteActReplanWorld(N, R) ::
     Nil
 
   def main(args: Array[String]) {
@@ -25,25 +34,29 @@ object Worlds {
     var worldIndex = 0
     var simulNum = 0
 
-    for (worldIndex <- 0 to 1) {      
+    for (worldIndex <- 0 to worlds.size-1) {
       var world = worlds(worldIndex)
 
-      for (simulNum <- 1 to 10) {
-        var iteration = 1
-        world.populate()
-        while (!world.done() && iteration < 100) {
-          world.act()
-          if (iteration == 1) {
-            world.ags.foreach(_.tracePhy())
-            startWellfare = world.wellfare
-            startLack = world.lack
+      for (meanIndex <- 0 to 4) {
+    	world.kmeanScale = kmeans(meanIndex)
+        
+        for (simulNum <- 1 to 10) {
+          var iteration = 1
+          world.populate()
+          while (!world.done() && iteration < 100) {
+            world.act()
+            if (iteration == 1) {
+              world.ags.foreach(_.tracePhy())
+              startWellfare = world.wellfare
+              startLack = world.lack
+            }
+
+            iteration += 1
           }
 
-          iteration += 1
+          sumarize(world, worldIndex, simulNum)
+          tracerc(world)
         }
-
-        sumarize(world, worldIndex, simulNum)
-        tracerc(world)
       }
     }
 
