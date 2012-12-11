@@ -33,11 +33,11 @@ case class SessionSoc(val wsoc: WorldSoc, val who: MsasAg, val neigh: MsasAg, va
      * Double-win test.
      */
     // Agent increment
-    if (doubleWin && afterU > beforeU) doubleWin = true
+    if (doubleWin && afterU >= beforeU) doubleWin = true
     else doubleWin = false
       
     // Wellfare increment
-    if (doubleWin && afterWellfare > beforeWellfare) doubleWin = true
+    if (doubleWin && afterWellfare >= beforeWellfare) doubleWin = true
     else doubleWin = false
     
     // Coalition - {i} wellfare increment

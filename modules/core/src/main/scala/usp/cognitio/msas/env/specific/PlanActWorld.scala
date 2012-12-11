@@ -9,6 +9,7 @@ import usp.cognitio.math.alg.Point
 import org.apache.log4j.Logger
 import usp.cognitio.msas.env.WorldSense
 import usp.cognitio.msas.agent.cog.Plan
+import scala.util.Random
 
 class PlanActWorld(val N: Int, private val _r: Int, var kmeanScale: Double = 0.1) extends GridWorld(_r) {
   val logger = Logger.getLogger(getClass().getName());
@@ -48,7 +49,20 @@ class PlanActWorld(val N: Int, private val _r: Int, var kmeanScale: Double = 0.1
   }
   override def randPosition(ag: MsasAg): (Point, Point) = (Point(randPos.nextInt(0, R - 1), randPos.nextInt(0, R - 1)), Point(R / 2, R / 2))
 
+  val r_lack = new Random()
+  val LACK = 0.3
   override def randRcAg(ag: Ag): Rc = {
+    def lack(ks: List[Int]) : List[Int] = {
+      var n_ks : List[Int] = Nil
+      for (k <- 0 to ks.size-1) {
+        if (r_lack.nextDouble() < LACK)
+          n_ks = 0 ::n_ks
+        else
+          n_ks = ks(k) ::n_ks
+      }
+      n_ks.reverse
+    }
+    
     var rc_ks: List[Int] = Nil
     for (k <- 0 to Rc.DIM - 1) {
       var distrib = rands(k).nextGaussian(mean, sigma).asInstanceOf[Int]
@@ -56,7 +70,7 @@ class PlanActWorld(val N: Int, private val _r: Int, var kmeanScale: Double = 0.1
       rc_ks = distrib :: rc_ks
     }
 
-    Rc(rc_ks)
+    Rc(lack(rc_ks))
   }
 
   /**

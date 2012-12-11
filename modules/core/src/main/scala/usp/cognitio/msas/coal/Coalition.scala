@@ -34,12 +34,12 @@ abstract class Coalition(protected var mbs: List[Ag]) extends Roundable with Log
   /** v(S) */
   def v: Double
 
-  def u : Double = members.map(_.u).sum / members.size
+  def u : Double = members.map(_.u).sum / members.size.asInstanceOf[Double]
   def u(als : Map[Ag,Rc]) : Double = 
     members.map(ag => {
       if (als.contains(ag)) ag.u(als(ag))
       else 0.00
-    }).sum / members.size
+    }).sum / members.size.asInstanceOf[Double]
   
   /**
    * Shapley calculation.

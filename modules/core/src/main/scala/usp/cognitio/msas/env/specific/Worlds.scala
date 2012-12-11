@@ -23,8 +23,8 @@ object Worlds {
   var kmeanScale = 0.05
   var kmeans = List(0.05, 0.075, 0.1, 0.125, 0.15)
   val worlds = 
-//    new Plan2OnceActAllWorld(N, R) ::
-//    new PlanCompleteActAllWorld(N, R) ::
+    new Plan2OnceActAllWorld(N, R) ::
+    new PlanCompleteActAllWorld(N, R) ::
     new PlanCompleteActReplanWorld(N, R) ::
     Nil
 
