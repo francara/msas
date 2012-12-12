@@ -16,9 +16,16 @@ case class EgoSoc(_ag: MsasAg) extends Ego(_ag) with Roundable with MindTraceabl
   def rc: Rc = ag.rc
   def rcPi: Rc = ag.rcPi
 
-  def u: Double = if (rcPi.sum > 0) round(consume(rc, rcPi.sum).sum.asInstanceOf[Double] / rcPi.sum) else 1.0
-  def u(al: Rc): Double = if (rcPi.sum > 0) round(consume(al, rcPi.sum).sum.asInstanceOf[Double] / rcPi.sum) else 1.0
+  def u: Double = uPerK(rc)
+  def u(al: Rc): Double = uPerK(al) 
 
+  private def uPerAll(theRc: Rc): Double = if (rcPi.sum > 0) round(consume(theRc, rcPi.sum).sum.asInstanceOf[Double] / rcPi.sum) else 1.0
+  private def uPerK(theRc: Rc) : Double = 
+    (
+        for (k <- 0 to Rc.DIM-1) 
+        yield if (rcPi(k) > 0) Math.min(theRc(k), rcPi(k)) / (rcPi(k).asInstanceOf[Double] * Rc.DIM ) else 1D/Rc.DIM 
+    ).sum
+  
   def act(sense: WorldSense, plan: Plan): Boolean = {
     debug(sense, "Soc", "U:" + u)
     def pre(ag: Ag) : String = "[NEIGH:" + ag.toString() + "]"
@@ -79,5 +86,14 @@ case class EgoSoc(_ag: MsasAg) extends Ego(_ag) with Roundable with MindTraceabl
     var rcEaten = eat(rcCoal, 0, q)
     return rcCoal - rcEaten
   }
+  
+  /**
+   * Returns a resource with the amount consumed from rc.
+   */
+  def consume(rc: Rc, q:Int, k: Int) : Rc = {
+    val r_q = Math.min(rc(k), q)
+    Rc(rc, k, r_q)
+  }
+  
   
 }

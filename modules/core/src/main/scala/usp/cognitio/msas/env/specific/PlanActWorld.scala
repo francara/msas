@@ -23,7 +23,7 @@ class PlanActWorld(val N: Int, private val _r: Int, var kmeanScale: Double = 0.1
   val randPos = new RandomDataImpl()
 
   
-  def mean: Double = R / 2
+  def mean: Double = R / 1.5
   def sigma: Double = mean / 4
   def kmean = kmeanScale * mean
   def ksigma = kmean / 4
@@ -50,15 +50,16 @@ class PlanActWorld(val N: Int, private val _r: Int, var kmeanScale: Double = 0.1
   override def randPosition(ag: MsasAg): (Point, Point) = (Point(randPos.nextInt(0, R - 1), randPos.nextInt(0, R - 1)), Point(R / 2, R / 2))
 
   val r_lack = new Random()
-  val LACK = 0.3
+  val LACK = 0.5
   override def randRcAg(ag: Ag): Rc = {
     def lack(ks: List[Int]) : List[Int] = {
+      var lacked = false
       var n_ks : List[Int] = Nil
       for (k <- 0 to ks.size-1) {
-        if (r_lack.nextDouble() < LACK)
+        if (r_lack.nextDouble() < LACK && !lacked) {
           n_ks = 0 ::n_ks
-        else
-          n_ks = ks(k) ::n_ks
+          lacked = true
+        } else n_ks = ks(k) ::n_ks
       }
       n_ks.reverse
     }
@@ -83,6 +84,13 @@ class PlanActWorld(val N: Int, private val _r: Int, var kmeanScale: Double = 0.1
     enter(ag, start.x, start.y)
   }
 
+  def plan() {
+    ags.foreach(ag => {
+      val sense = this.sense(ag)
+      ag.plan(sense)
+    })
+  }
+  
   def act() {
     currentIteration += 1
     ags.foreach(ag => {
@@ -101,6 +109,7 @@ class PlanActWorld(val N: Int, private val _r: Int, var kmeanScale: Double = 0.1
     def replanning(ag: MsasAg) = "[" + ag + "] Replanning"
 
     this.clear()
+    currentIteration = 0
     for (i <- 1 to N) {
       /*
        * BEHAVIOUR
@@ -117,6 +126,8 @@ class PlanActWorld(val N: Int, private val _r: Int, var kmeanScale: Double = 0.1
   def satisfied(): Boolean = !ags.exists(!_.satisfied)
   def done(): Boolean = ags.filter(!_.satisfied).filter(ag => !ag.stagnated && !ag.stucked).size == 0
   def create(id: Int): PlanAg = new PlanAg(this, id, Rc()) with PlanOnceActAllBehaviour
+  
+  def code : String = ""
 }
 
 case class PlanAg(world: PlanActWorld, _i: Int, _rc: Rc) extends MsasAg(_i, _rc) {

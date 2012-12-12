@@ -57,6 +57,24 @@ trait PlanBehaviour extends MindTraceable {
   def isStopWhenInsufficient = stopWhen == STOP_WHEN_INSUFFICENT
   def isStopWhenStucked = !isStopWhenInsufficient
 
+  def plan(sense: WorldSense) {
+    info(sense, "Plan", plan.toString())
+    
+    /*
+     * An agent should generate a new plan
+     * only if needed.
+     */
+    plan match {
+      case NullPlan() => {
+        plan = ecog.think(sense)
+      }
+      case p: SingletonPlan => true
+      case _ => {
+        plan = ecog.think(sense)
+      }
+    }    
+  }
+  
   def act(sense: WorldSense) {
     throw new UnsupportedOperationException()
   }

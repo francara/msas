@@ -93,7 +93,7 @@ class GridWorld(val R : Int) extends WorldSoc with WorldPhy {
     
     return result
   }  
-  def moveToNeigh(ag: Ag, p: Point) : GridCell = {
+  private def moveToNeigh(ag: Ag, p: Point) : GridCell = {
     if (where(ag).neigh(p) == where(ag)) where(ag)
     val cell = where(ag).out(ag).neigh(p).in(ag)
     where(ag) = cell
